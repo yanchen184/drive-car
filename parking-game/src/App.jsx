@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import MainMenu from './components/ui/MainMenu';
 import LevelSelect from './components/ui/LevelSelect';
-import Car3DControls from './components/controls/Car3DControls';
+import SteeringWheel from './components/controls/SteeringWheel';
+import GearControls from './components/controls/GearControls';
 import HUD from './components/ui/HUD';
-import Game3D from './components/game/Game3D';
+import GameCanvas from './components/game/GameCanvas';
 import LevelComplete from './components/ui/LevelComplete';
 import LevelFailed from './components/ui/LevelFailed';
 import PauseMenu from './components/ui/PauseMenu';
@@ -14,11 +15,19 @@ import { getStarRating } from './utils/scoring/starRating';
 import './index.css';
 
 function App() {
+  // 輸出版本號到控制台
+  useEffect(() => {
+    console.log('%c🚗 Drive & Park v2.1.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c2D停車遊戲 - 優化版本', 'color: #10B981; font-size: 14px');
+    console.log('物理引擎: Matter.js');
+    console.log('控制方式: 方向盤 + 排檔桿');
+  }, []);
+
   const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game'
   const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
   const [levelData, setLevelData] = useState(null);
   const [steeringInput, setSteeringInput] = useState(0);
-  const [throttleInput, setThrottleInput] = useState(0); // 油門輸入 (0-1)
+  const [gearInput, setGearInput] = useState('P'); // P, D, R
   const [brakeInput, setBrakeInput] = useState(false);
 
   // Modal states
@@ -84,7 +93,7 @@ function App() {
       setCurrentScreen('game');
       // Reset game state
       setSteeringInput(0);
-      setThrottleInput(0);
+      setGearInput('P');
       setBrakeInput(false);
     }
   };
@@ -93,8 +102,8 @@ function App() {
     setSteeringInput(angle);
   };
 
-  const handleThrottle = (value) => {
-    setThrottleInput(value);
+  const handleGearChange = (gear) => {
+    setGearInput(gear);
   };
 
   const handleBrake = (isBraking) => {
@@ -189,7 +198,7 @@ function App() {
     setLevelData({ ...levelData });
   };
 
-  // Keyboard controls
+  // Keyboard controls for 2D game
   useEffect(() => {
     if (currentScreen !== 'game') return;
 
@@ -203,12 +212,12 @@ function App() {
         case 'ArrowUp':
         case 'w':
         case 'W':
-          setThrottleInput(1); // Full throttle
+          if (gearInput === 'P') setGearInput('D');
           break;
         case 'ArrowDown':
         case 's':
         case 'S':
-          setThrottleInput(-1); // Reverse
+          if (gearInput === 'P') setGearInput('R');
           break;
         case 'ArrowLeft':
         case 'a':
@@ -223,6 +232,10 @@ function App() {
         case ' ':
           setBrakeInput(true); // Brake
           break;
+        case 'p':
+        case 'P':
+          setGearInput('P'); // Park
+          break;
         case 'Escape':
           handlePause();
           break;
@@ -233,14 +246,6 @@ function App() {
 
     const handleKeyUp = (e) => {
       switch (e.key) {
-        case 'ArrowUp':
-        case 'ArrowDown':
-        case 'w':
-        case 'W':
-        case 's':
-        case 'S':
-          setThrottleInput(0); // Release throttle
-          break;
         case 'ArrowLeft':
         case 'ArrowRight':
         case 'a':
@@ -264,7 +269,7 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [currentScreen]);
+  }, [currentScreen, gearInput]);
 
   if (currentScreen === 'menu') {
     return (
@@ -302,25 +307,44 @@ function App() {
         onHome={handleHome}
       />
 
-      {/* 3D Game Canvas */}
+      {/* 2D Game Canvas */}
       {levelData && (
-        <Game3D
+        <GameCanvas
           levelData={levelData}
           onLevelComplete={handleLevelComplete}
           onLevelFailed={handleLevelFailed}
           onStatsUpdate={handleStatsUpdate}
           steeringInput={steeringInput}
-          throttleInput={throttleInput}
+          gearInput={gearInput}
           brakeInput={brakeInput}
         />
       )}
 
-      {/* 3D Controls */}
-      <Car3DControls
-        onSteer={handleSteer}
-        onThrottle={handleThrottle}
-        onBrake={handleBrake}
-      />
+      {/* 2D Controls - Bottom Left: Steering, Bottom Right: Gear */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-end pointer-events-none">
+        <div className="pointer-events-auto">
+          <SteeringWheel onSteer={handleSteer} />
+        </div>
+        <div className="pointer-events-auto">
+          <GearControls
+            currentGear={gearInput}
+            onGearChange={handleGearChange}
+            onBrake={handleBrake}
+          />
+        </div>
+      </div>
+
+      {/* Keyboard Controls Help */}
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 pointer-events-none">
+        <div className="bg-gray-800/80 backdrop-blur-sm px-4 py-2 rounded-lg text-xs text-gray-300 text-center">
+          🎮 <span className="font-semibold">鍵盤控制：</span>
+          <span className="mx-2">W/↑ 前進(D)</span>
+          <span className="mx-2">S/↓ 倒車(R)</span>
+          <span className="mx-2">A/← D/→ 轉向</span>
+          <span className="mx-2">空白鍵 煞車</span>
+          <span className="mx-2">P 停車(P)</span>
+        </div>
+      </div>
 
       {/* Modals */}
       <LevelComplete

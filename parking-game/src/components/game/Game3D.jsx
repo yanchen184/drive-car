@@ -13,8 +13,8 @@ import Obstacles from './3d/Obstacles';
  */
 const Game3D = ({
   levelData,
-  onLevelComplete,
-  onLevelFailed,
+  // onLevelComplete, // TODO: Implement level completion logic
+  // onLevelFailed, // TODO: Implement level failure logic
   onStatsUpdate,
   steeringInput = 0,
   throttleInput = 0,
