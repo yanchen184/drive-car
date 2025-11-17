@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --primary-blue: #3B82F6;
+    --primary-dark: #1E40AF;
+    --primary-light: #60A5FA;
+
+    /* Game Colors */
+    --road-gray: #374151;
+    --parking-yellow: #FCD34D;
+    --target-green: #10B981;
+    --danger-red: #EF4444;
+    --warning-orange: #F59E0B;
+
+    /* UI Colors */
+    --background: #111827;
+    --surface: #1F2937;
+    --surface-light: #374151;
+    --border: #4B5563;
+
+    /* Text Colors */
+    --text-primary: #F9FAFB;
+    --text-secondary: #D1D5DB;
+    --text-muted: #9CA3AF;
+
+    /* Status Colors */
+    --success: #10B981;
+    --error: #EF4444;
+    --info: #3B82F6;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent touch callout on mobile */
+  * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Allow text selection where needed */
+  input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+@layer components {
+  /* Button Base Styles */
+  .btn {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200
+           transform active:scale-95 cursor-pointer inline-flex items-center
+           justify-center min-h-[48px] relative overflow-hidden;
+  }
+
+  .btn-primary {
+    @apply bg-blue-500 text-white hover:bg-blue-700
+           shadow-lg hover:shadow-xl;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-800 text-gray-100 hover:bg-gray-700
+           border-2 border-gray-600 hover:border-blue-500;
+  }
+
+  /* Card Styles */
+  .card {
+    @apply bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-600;
+  }
+
+  /* Control Styles */
+  .control-button {
+    @apply bg-gray-700 rounded-xl p-4 active:bg-blue-500
+           transition-all duration-150 border-2 border-gray-600
+           hover:border-blue-500 flex items-center justify-center
+           min-w-[80px] min-h-[80px];
+  }
+}
+
+@layer utilities {
+  /* Custom Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-light to-primary bg-clip-text text-transparent;
+  }
+}
+
+/* Focus Styles for Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+}

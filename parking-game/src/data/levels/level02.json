@@ -1,0 +1,38 @@
+{
+  "levelNumber": 2,
+  "title": "Simple Parallel Parking",
+  "difficulty": "beginner",
+  "parkingSpot": {
+    "x": 400,
+    "y": 250,
+    "width": 70,
+    "height": 110,
+    "angle": 0
+  },
+  "obstacles": [
+    {
+      "type": "car",
+      "x": 400,
+      "y": 130,
+      "width": 60,
+      "height": 100,
+      "angle": 0
+    }
+  ],
+  "carStartPosition": {
+    "x": 200,
+    "y": 300,
+    "angle": 0
+  },
+  "timeLimit": null,
+  "par": {
+    "time": 45,
+    "accuracy": 88,
+    "collisions": 0
+  },
+  "hints": [
+    "Position your car parallel to the parked car",
+    "Reverse slowly into the space",
+    "Use small steering adjustments"
+  ]
+}

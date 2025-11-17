@@ -1,0 +1,54 @@
+{
+  "levelNumber": 6,
+  "title": "Parallel Parking Challenge",
+  "difficulty": "intermediate",
+  "parkingSpot": {
+    "x": 350,
+    "y": 300,
+    "width": 90,
+    "height": 130,
+    "angle": 0
+  },
+  "obstacles": [
+    {
+      "type": "car",
+      "x": 350,
+      "y": 190,
+      "width": 65,
+      "height": 105,
+      "angle": 0
+    },
+    {
+      "type": "car",
+      "x": 350,
+      "y": 410,
+      "width": 65,
+      "height": 105,
+      "angle": 0
+    },
+    {
+      "type": "wall",
+      "x": 280,
+      "y": 300,
+      "width": 10,
+      "height": 400,
+      "angle": 0
+    }
+  ],
+  "carStartPosition": {
+    "x": 500,
+    "y": 300,
+    "angle": 0
+  },
+  "timeLimit": 120,
+  "par": {
+    "time": 60,
+    "accuracy": 82,
+    "collisions": 0
+  },
+  "hints": [
+    "Pull up alongside the front car",
+    "Reverse at 45 degrees",
+    "Straighten when parallel"
+  ]
+}

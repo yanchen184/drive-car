@@ -1,0 +1,70 @@
+{
+  "levelNumber": 7,
+  "title": "Shopping Mall Parking",
+  "difficulty": "intermediate",
+  "parkingSpot": {
+    "x": 450,
+    "y": 250,
+    "width": 70,
+    "height": 110,
+    "angle": 0
+  },
+  "obstacles": [
+    {
+      "type": "car",
+      "x": 390,
+      "y": 250,
+      "width": 60,
+      "height": 100,
+      "angle": 0
+    },
+    {
+      "type": "car",
+      "x": 510,
+      "y": 250,
+      "width": 60,
+      "height": 100,
+      "angle": 0
+    },
+    {
+      "type": "cone",
+      "x": 300,
+      "y": 400,
+      "width": 15,
+      "height": 15,
+      "angle": 0
+    },
+    {
+      "type": "cone",
+      "x": 500,
+      "y": 400,
+      "width": 15,
+      "height": 15,
+      "angle": 0
+    },
+    {
+      "type": "wall",
+      "x": 450,
+      "y": 180,
+      "width": 250,
+      "height": 10,
+      "angle": 0
+    }
+  ],
+  "carStartPosition": {
+    "x": 200,
+    "y": 450,
+    "angle": 0
+  },
+  "timeLimit": 90,
+  "par": {
+    "time": 50,
+    "accuracy": 80,
+    "collisions": 0
+  },
+  "hints": [
+    "Navigate around the cones",
+    "Tight space - be precise",
+    "Take your time"
+  ]
+}

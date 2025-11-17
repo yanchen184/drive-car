@@ -1,0 +1,46 @@
+{
+  "levelNumber": 5,
+  "title": "Reverse Bay Parking",
+  "difficulty": "beginner",
+  "parkingSpot": {
+    "x": 400,
+    "y": 200,
+    "width": 80,
+    "height": 120,
+    "angle": 90
+  },
+  "obstacles": [
+    {
+      "type": "wall",
+      "x": 400,
+      "y": 100,
+      "width": 200,
+      "height": 10,
+      "angle": 0
+    },
+    {
+      "type": "car",
+      "x": 480,
+      "y": 200,
+      "width": 70,
+      "height": 110,
+      "angle": 90
+    }
+  ],
+  "carStartPosition": {
+    "x": 400,
+    "y": 500,
+    "angle": 0
+  },
+  "timeLimit": 90,
+  "par": {
+    "time": 45,
+    "accuracy": 85,
+    "collisions": 0
+  },
+  "hints": [
+    "Align with parking spot",
+    "Use your mirrors",
+    "Reverse slowly and steadily"
+  ]
+}

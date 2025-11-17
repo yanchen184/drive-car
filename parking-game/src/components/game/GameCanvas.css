@@ -1,0 +1,437 @@
+/**
+ * GameCanvas Component Styles
+ * Visual enhancements and overlays for the parking game
+ * BEM Naming Convention: .block__element--modifier
+ */
+
+/* ===================================
+   Canvas Container
+   =================================== */
+.game-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--background, #111827);
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.game-canvas__viewport {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Canvas visual enhancements */
+.game-canvas::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ===================================
+   Parking Zone Indicators
+   =================================== */
+.game-canvas__parking-indicator {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.95),
+    rgba(5, 150, 105, 0.95)
+  );
+  color: #F9FAFB;
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 50px;
+  box-shadow:
+    0 4px 12px rgba(16, 185, 129, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  z-index: 10;
+  animation: slideDown 0.3s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+.game-canvas__parking-indicator--warning {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.95),
+    rgba(217, 119, 6, 0.95)
+  );
+  box-shadow:
+    0 4px 12px rgba(245, 158, 11, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.game-canvas__parking-indicator--error {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.95),
+    rgba(220, 38, 38, 0.95)
+  );
+  box-shadow:
+    0 4px 12px rgba(239, 68, 68, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Accuracy percentage display */
+.game-canvas__accuracy {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 13px;
+}
+
+/* ===================================
+   Collision Effects
+   =================================== */
+.game-canvas__collision-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(239, 68, 68, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 5;
+  animation: collisionFlash 0.5s ease-out;
+}
+
+@keyframes collisionFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+/* Screen shake effect for impacts */
+.game-canvas--shake {
+  animation: screenShake 0.3s ease-out;
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* ===================================
+   Visual Guide Overlays
+   =================================== */
+.game-canvas__guides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Distance guide line */
+.game-canvas__distance-guide {
+  stroke-dasharray: 5, 5;
+  stroke-width: 2;
+  fill: none;
+  opacity: 0.6;
+  animation: guidePulse 2s ease-in-out infinite;
+}
+
+.game-canvas__distance-guide--close {
+  stroke: #EF4444;
+}
+
+.game-canvas__distance-guide--optimal {
+  stroke: #10B981;
+}
+
+.game-canvas__distance-guide--far {
+  stroke: #3B82F6;
+}
+
+/* Angle alignment arc */
+.game-canvas__angle-guide {
+  fill: none;
+  stroke-width: 3;
+  opacity: 0.7;
+}
+
+.game-canvas__angle-guide--perfect {
+  stroke: #10B981;
+}
+
+.game-canvas__angle-guide--acceptable {
+  stroke: #F59E0B;
+}
+
+.game-canvas__angle-guide--bad {
+  stroke: #EF4444;
+}
+
+/* ===================================
+   Success/Failure Overlays
+   =================================== */
+.game-canvas__success-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 24px 48px;
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.95),
+    rgba(5, 150, 105, 0.95)
+  );
+  color: white;
+  font-family: var(--font-display, 'Orbitron', monospace);
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-radius: 12px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 60px rgba(16, 185, 129, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  z-index: 20;
+  animation: successBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes successBounce {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3) rotate(-180deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0);
+  }
+}
+
+.game-canvas__failure-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 24px 48px;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.95),
+    rgba(185, 28, 28, 0.95)
+  );
+  color: white;
+  font-family: var(--font-display, 'Orbitron', monospace);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 12px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(239, 68, 68, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  z-index: 20;
+  animation: failureShake 0.5s ease-out;
+}
+
+@keyframes failureShake {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translate(-48%, -50%) rotate(-2deg);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translate(-52%, -50%) rotate(2deg);
+  }
+}
+
+/* ===================================
+   Speed Indicator Visual
+   =================================== */
+.game-canvas__speed-visual {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 120px;
+  height: 120px;
+  z-index: 8;
+}
+
+.game-canvas__speedometer {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(31, 41, 55, 0.9),
+      rgba(17, 24, 39, 0.9)
+    );
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.game-canvas__speed-needle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 45%;
+  background: linear-gradient(
+    to top,
+    #EF4444,
+    #F59E0B,
+    #10B981
+  );
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%) rotate(var(--speed-rotation, -90deg));
+  transition: transform 0.2s ease-out;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ===================================
+   Parking Guides Animation
+   =================================== */
+@keyframes guidePulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ===================================
+   Responsive Design
+   =================================== */
+
+/* Mobile (portrait) */
+@media (max-width: 767px) and (orientation: portrait) {
+  .game-canvas__parking-indicator {
+    top: 10px;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .game-canvas__speed-visual {
+    width: 80px;
+    height: 80px;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .game-canvas__success-overlay,
+  .game-canvas__failure-overlay {
+    padding: 16px 32px;
+    font-size: 18px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .game-canvas__parking-indicator {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+
+  .game-canvas__speed-visual {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .game-canvas {
+    border-radius: 12px;
+  }
+
+  /* Hover effect for interactive elements */
+  .game-canvas__parking-indicator:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow:
+      0 6px 20px rgba(16, 185, 129, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* ===================================
+   Accessibility
+   =================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .game-canvas {
+    border: 2px solid #F9FAFB;
+  }
+
+  .game-canvas__parking-indicator {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .game-canvas__collision-overlay,
+  .game-canvas__success-overlay,
+  .game-canvas__failure-overlay,
+  .game-canvas--shake {
+    animation: none;
+  }
+
+  .game-canvas__speed-needle {
+    transition: none;
+  }
+}

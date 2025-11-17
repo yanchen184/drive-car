@@ -1,0 +1,62 @@
+{
+  "levelNumber": 10,
+  "title": "Advanced Parallel",
+  "difficulty": "intermediate",
+  "parkingSpot": {
+    "x": 350,
+    "y": 280,
+    "width": 85,
+    "height": 125,
+    "angle": 0
+  },
+  "obstacles": [
+    {
+      "type": "car",
+      "x": 350,
+      "y": 180,
+      "width": 60,
+      "height": 100,
+      "angle": 0
+    },
+    {
+      "type": "car",
+      "x": 350,
+      "y": 380,
+      "width": 60,
+      "height": 100,
+      "angle": 0
+    },
+    {
+      "type": "wall",
+      "x": 280,
+      "y": 280,
+      "width": 10,
+      "height": 350,
+      "angle": 0
+    },
+    {
+      "type": "cone",
+      "x": 480,
+      "y": 280,
+      "width": 15,
+      "height": 15,
+      "angle": 0
+    }
+  ],
+  "carStartPosition": {
+    "x": 550,
+    "y": 280,
+    "angle": 0
+  },
+  "timeLimit": 90,
+  "par": {
+    "time": 55,
+    "accuracy": 78,
+    "collisions": 0
+  },
+  "hints": [
+    "Standard parallel parking",
+    "Watch the cone obstacle",
+    "Precise movements needed"
+  ]
+}

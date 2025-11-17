@@ -1,0 +1,29 @@
+{
+  "levelNumber": 1,
+  "title": "Empty Lot - Forward Parking",
+  "difficulty": "beginner",
+  "parkingSpot": {
+    "x": 400,
+    "y": 300,
+    "width": 80,
+    "height": 120,
+    "angle": 0
+  },
+  "obstacles": [],
+  "carStartPosition": {
+    "x": 200,
+    "y": 300,
+    "angle": 0
+  },
+  "timeLimit": null,
+  "par": {
+    "time": 30,
+    "accuracy": 90,
+    "collisions": 0
+  },
+  "hints": [
+    "Drive forward slowly using the Forward button",
+    "Align your car with the yellow parking lines",
+    "Stop when your car is centered in the parking spot"
+  ]
+}

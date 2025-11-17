@@ -1,0 +1,70 @@
+{
+  "levelNumber": 13,
+  "title": "Valet Challenge",
+  "difficulty": "advanced",
+  "parkingSpot": {
+    "x": 320,
+    "y": 220,
+    "width": 70,
+    "height": 110,
+    "angle": 45
+  },
+  "obstacles": [
+    {
+      "type": "car",
+      "x": 400,
+      "y": 220,
+      "width": 60,
+      "height": 100,
+      "angle": 45
+    },
+    {
+      "type": "car",
+      "x": 240,
+      "y": 220,
+      "width": 60,
+      "height": 100,
+      "angle": 45
+    },
+    {
+      "type": "car",
+      "x": 320,
+      "y": 350,
+      "width": 60,
+      "height": 100,
+      "angle": 0
+    },
+    {
+      "type": "cone",
+      "x": 450,
+      "y": 350,
+      "width": 15,
+      "height": 15,
+      "angle": 0
+    },
+    {
+      "type": "cone",
+      "x": 190,
+      "y": 350,
+      "width": 15,
+      "height": 15,
+      "angle": 0
+    }
+  ],
+  "carStartPosition": {
+    "x": 320,
+    "y": 500,
+    "angle": 0
+  },
+  "timeLimit": 75,
+  "par": {
+    "time": 55,
+    "accuracy": 82,
+    "collisions": 0
+  },
+  "hints": [
+    "Complex obstacle pattern",
+    "Plan your approach",
+    "Professional precision"
+  ]
+}
