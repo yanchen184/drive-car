@@ -1,12 +1,12 @@
 {
   "levelNumber": 1,
-  "title": "Empty Lot - Forward Parking",
+  "title": "超簡單停車 - Easy Parking",
   "difficulty": "beginner",
   "parkingSpot": {
-    "x": 400,
+    "x": 350,
     "y": 300,
-    "width": 80,
-    "height": 120,
+    "width": 150,
+    "height": 180,
     "angle": 0
   },
   "obstacles": [],
@@ -15,15 +15,15 @@
     "y": 300,
     "angle": 0
   },
-  "timeLimit": null,
+  "timeLimit": 60,
   "par": {
-    "time": 30,
-    "accuracy": 90,
+    "time": 20,
+    "accuracy": 60,
     "collisions": 0
   },
   "hints": [
-    "Drive forward slowly using the Forward button",
-    "Align your car with the yellow parking lines",
-    "Stop when your car is centered in the parking spot"
+    "1️⃣ 點擊右下角 FORWARD (D) 前進",
+    "2️⃣ 拖曳左下角方向盤轉向",
+    "3️⃣ 開進黃色框框內就過關！"
   ]
 }
