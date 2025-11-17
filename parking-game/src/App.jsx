@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainMenu from './components/ui/MainMenu';
 import LevelSelect from './components/ui/LevelSelect';
 import SteeringWheel from './components/controls/SteeringWheel';
@@ -189,6 +189,67 @@ function App() {
     // Reload level data to restart
     setLevelData({ ...levelData });
   };
+
+  // Keyboard controls
+  useEffect(() => {
+    if (currentScreen !== 'game') return;
+
+    const handleKeyDown = (e) => {
+      // Prevent default for arrow keys and space
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+        e.preventDefault();
+      }
+
+      switch (e.key) {
+        case 'ArrowUp':
+          setGearInput('D'); // Forward
+          break;
+        case 'ArrowDown':
+          setGearInput('R'); // Reverse
+          break;
+        case 'ArrowLeft':
+          setSteeringInput(-1); // Steer left
+          break;
+        case 'ArrowRight':
+          setSteeringInput(1); // Steer right
+          break;
+        case ' ':
+          setBrakeInput(true); // Brake
+          break;
+        case 'Escape':
+          handlePause();
+          break;
+        default:
+          break;
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      switch (e.key) {
+        case 'ArrowUp':
+        case 'ArrowDown':
+          setGearInput('N'); // Neutral
+          break;
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          setSteeringInput(0); // Center steering
+          break;
+        case ' ':
+          setBrakeInput(false); // Release brake
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [currentScreen]);
 
   if (currentScreen === 'menu') {
     return (
