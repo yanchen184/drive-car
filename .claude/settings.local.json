@@ -19,7 +19,8 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
       "Bash(npm run build:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "WebFetch(domain:yanchen184.github.io)"
     ],
     "deny": []
   }

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import MainMenu from './components/ui/MainMenu';
 import LevelSelect from './components/ui/LevelSelect';
-import SteeringWheel from './components/controls/SteeringWheel';
-import GearControls from './components/controls/GearControls';
+import Car3DControls from './components/controls/Car3DControls';
 import HUD from './components/ui/HUD';
-import GameCanvas from './components/game/GameCanvas';
+import Game3D from './components/game/Game3D';
 import LevelComplete from './components/ui/LevelComplete';
 import LevelFailed from './components/ui/LevelFailed';
 import PauseMenu from './components/ui/PauseMenu';
@@ -19,7 +18,7 @@ function App() {
   const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
   const [levelData, setLevelData] = useState(null);
   const [steeringInput, setSteeringInput] = useState(0);
-  const [gearInput, setGearInput] = useState('P');
+  const [throttleInput, setThrottleInput] = useState(0); // 油門輸入 (0-1)
   const [brakeInput, setBrakeInput] = useState(false);
 
   // Modal states
@@ -85,7 +84,7 @@ function App() {
       setCurrentScreen('game');
       // Reset game state
       setSteeringInput(0);
-      setGearInput('P');
+      setThrottleInput(0);
       setBrakeInput(false);
     }
   };
@@ -94,8 +93,8 @@ function App() {
     setSteeringInput(angle);
   };
 
-  const handleGearChange = (gear) => {
-    setGearInput(gear);
+  const handleThrottle = (value) => {
+    setThrottleInput(value);
   };
 
   const handleBrake = (isBraking) => {
@@ -202,15 +201,23 @@ function App() {
 
       switch (e.key) {
         case 'ArrowUp':
-          setGearInput('D'); // Forward
+        case 'w':
+        case 'W':
+          setThrottleInput(1); // Full throttle
           break;
         case 'ArrowDown':
-          setGearInput('R'); // Reverse
+        case 's':
+        case 'S':
+          setThrottleInput(-1); // Reverse
           break;
         case 'ArrowLeft':
+        case 'a':
+        case 'A':
           setSteeringInput(-1); // Steer left
           break;
         case 'ArrowRight':
+        case 'd':
+        case 'D':
           setSteeringInput(1); // Steer right
           break;
         case ' ':
@@ -228,10 +235,18 @@ function App() {
       switch (e.key) {
         case 'ArrowUp':
         case 'ArrowDown':
-          setGearInput('N'); // Neutral
+        case 'w':
+        case 'W':
+        case 's':
+        case 'S':
+          setThrottleInput(0); // Release throttle
           break;
         case 'ArrowLeft':
         case 'ArrowRight':
+        case 'a':
+        case 'A':
+        case 'd':
+        case 'D':
           setSteeringInput(0); // Center steering
           break;
         case ' ':
@@ -287,40 +302,25 @@ function App() {
         onHome={handleHome}
       />
 
-      {/* Game Canvas Area */}
-      <div className="game-canvas absolute inset-0">
-        {levelData && (
-          <GameCanvas
-            levelData={levelData}
-            onLevelComplete={handleLevelComplete}
-            onLevelFailed={handleLevelFailed}
-            onStatsUpdate={handleStatsUpdate}
-            steeringInput={steeringInput}
-            gearInput={gearInput}
-            brakeInput={brakeInput}
-          />
-        )}
-      </div>
+      {/* 3D Game Canvas */}
+      {levelData && (
+        <Game3D
+          levelData={levelData}
+          onLevelComplete={handleLevelComplete}
+          onLevelFailed={handleLevelFailed}
+          onStatsUpdate={handleStatsUpdate}
+          steeringInput={steeringInput}
+          throttleInput={throttleInput}
+          brakeInput={brakeInput}
+        />
+      )}
 
-      {/* Bottom Controls */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 via-gray-900/95 to-transparent p-4 pointer-events-none">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-end gap-4">
-            {/* Steering Wheel */}
-            <div className="flex-1 flex justify-center pointer-events-auto">
-              <SteeringWheel onSteer={handleSteer} />
-            </div>
-
-            {/* Gear Controls */}
-            <div className="flex-1 flex justify-center pointer-events-auto">
-              <GearControls
-                onGearChange={handleGearChange}
-                onBrake={handleBrake}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* 3D Controls */}
+      <Car3DControls
+        onSteer={handleSteer}
+        onThrottle={handleThrottle}
+        onBrake={handleBrake}
+      />
 
       {/* Modals */}
       <LevelComplete
