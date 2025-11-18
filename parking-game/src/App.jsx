@@ -5,6 +5,7 @@ import SteeringWheel from './components/controls/SteeringWheel';
 import GearControls from './components/controls/GearControls';
 import HUD from './components/ui/HUD';
 import GameCanvas from './components/game/GameCanvas';
+import SimpleCar from './components/game/SimpleCar';
 import LevelComplete from './components/ui/LevelComplete';
 import LevelFailed from './components/ui/LevelFailed';
 import PauseMenu from './components/ui/PauseMenu';
@@ -17,13 +18,13 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 Drive & Park v2.1.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c2D停車遊戲 - 優化版本', 'color: #10B981; font-size: 14px');
-    console.log('物理引擎: Matter.js');
-    console.log('控制方式: 方向盤 + 排檔桿');
+    console.log('%c🚗 Drive & Park v3.0.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c簡單車輛控制系統 - 核心版本', 'color: #10B981; font-size: 14px');
+    console.log('物理模型: Ackermann 轉向');
+    console.log('控制方式: 方向鍵');
   }, []);
 
-  const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game'
+  const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game', 'simple'
   const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
   const [levelData, setLevelData] = useState(null);
   const [steeringInput, setSteeringInput] = useState(0);
@@ -84,7 +85,8 @@ function App() {
   };
 
   const handleStartGame = () => {
-    setCurrentScreen('levelSelect');
+    // 直接進入簡單模式
+    setCurrentScreen('simple');
   };
 
   const handleSelectLevel = async (levelNumber) => {
@@ -280,6 +282,10 @@ function App() {
         onLeaderboard={() => console.log('Leaderboard')}
       />
     );
+  }
+
+  if (currentScreen === 'simple') {
+    return <SimpleCar />;
   }
 
   if (currentScreen === 'levelSelect') {
