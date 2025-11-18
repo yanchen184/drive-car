@@ -130,7 +130,7 @@ const MainMenu = ({ onStartGame, onTutorial, onSettings, onLeaderboard }) => {
 
       {/* Version Info */}
       <div className="absolute bottom-4 right-4 text-xs text-gray-600">
-        v1.0.0
+        v2.1.0
       </div>
     </div>
   );
