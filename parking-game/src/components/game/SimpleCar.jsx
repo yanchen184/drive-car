@@ -21,16 +21,25 @@ const SimpleCar = () => {
 
   // 車輛狀態
   const [carState, setCarState] = useState({
-    x: 400,           // 車輛中心 x 座標
-    y: 300,           // 車輛中心 y 座標
+    x: 200,           // 車輛中心 x 座標（起始位置調整）
+    y: 500,           // 車輛中心 y 座標
     angle: 0,         // 車身角度（弧度）
     steeringAngle: 0, // 方向盤/前輪角度（弧度）
     speed: 0,         // 當前速度
-    maxSpeed: 5,      // 最大速度
-    acceleration: 0.2,// 加速度
+    maxSpeed: 2,      // 最大速度（降低）
+    acceleration: 0.1,// 加速度（降低）
     friction: 0.95,   // 摩擦力
     wheelBase: 80,    // 軸距（前後輪距離）
   });
+
+  // 停車格配置
+  const parkingSpot = {
+    x: 600,           // 停車格中心 x
+    y: 200,           // 停車格中心 y
+    width: 60,        // 停車格寬度
+    height: 100,      // 停車格長度
+    angle: 0,         // 停車格角度
+  };
 
   // 車輛尺寸常數
   const CAR_WIDTH = 40;
@@ -104,6 +113,60 @@ const SimpleCar = () => {
   };
 
   /**
+   * 繪製停車格
+   */
+  const drawParkingSpot = (ctx, spot) => {
+    ctx.save();
+    ctx.translate(spot.x, spot.y);
+    ctx.rotate(spot.angle);
+
+    // 停車格底色（半透明黃色）
+    ctx.fillStyle = 'rgba(234, 179, 8, 0.2)';
+    ctx.fillRect(-spot.width / 2, -spot.height / 2, spot.width, spot.height);
+
+    // 停車格邊線（黃色虛線）
+    ctx.strokeStyle = '#EAB308';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([10, 5]);
+    ctx.strokeRect(-spot.width / 2, -spot.height / 2, spot.width, spot.height);
+    ctx.setLineDash([]);
+
+    // 停車格標記 "P"
+    ctx.fillStyle = '#EAB308';
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('P', 0, 0);
+
+    ctx.restore();
+  };
+
+  /**
+   * 檢查是否成功停車
+   */
+  const checkParking = (car, spot) => {
+    // 計算距離
+    const dx = car.x - spot.x;
+    const dy = car.y - spot.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // 計算角度差異
+    const angleDiff = Math.abs(car.angle - spot.angle) * 180 / Math.PI;
+
+    // 停車成功條件
+    const isInPosition = distance < 20; // 距離小於20px
+    const isAligned = angleDiff < 5;    // 角度差異小於5度
+    const isStopped = Math.abs(car.speed) < 0.1; // 速度接近0
+
+    return {
+      success: isInPosition && isAligned && isStopped,
+      distance,
+      angleDiff,
+      speed: Math.abs(car.speed),
+    };
+  };
+
+  /**
    * 繪製場景
    */
   const drawScene = (ctx, canvas, car) => {
@@ -130,8 +193,14 @@ const SimpleCar = () => {
       ctx.stroke();
     }
 
+    // 繪製停車格
+    drawParkingSpot(ctx, parkingSpot);
+
     // 繪製車輛
     drawCar(ctx, car);
+
+    // 檢查停車狀態
+    const parkingStatus = checkParking(car, parkingSpot);
 
     // 繪製資訊面板
     ctx.fillStyle = '#F3F4F6';
@@ -140,6 +209,17 @@ const SimpleCar = () => {
     ctx.fillText(`速度: ${car.speed.toFixed(2)}`, 10, 40);
     ctx.fillText(`車身角度: ${(car.angle * 180 / Math.PI).toFixed(1)}°`, 10, 60);
     ctx.fillText(`方向盤角度: ${(car.steeringAngle * 180 / Math.PI).toFixed(1)}°`, 10, 80);
+
+    // 顯示停車狀態
+    ctx.font = 'bold 16px monospace';
+    if (parkingStatus.success) {
+      ctx.fillStyle = '#10B981'; // 綠色
+      ctx.fillText('✓ 停車成功！', 10, 110);
+    } else {
+      ctx.fillStyle = '#9CA3AF';
+      ctx.fillText(`距離: ${parkingStatus.distance.toFixed(1)}px`, 10, 110);
+      ctx.fillText(`角度差: ${parkingStatus.angleDiff.toFixed(1)}°`, 10, 130);
+    }
 
     // 繪製控制說明
     ctx.fillStyle = '#9CA3AF';
@@ -153,15 +233,15 @@ const SimpleCar = () => {
   const updateCarPhysics = (car, controls) => {
     const newCar = { ...car };
 
-    // 更新方向盤角度（慢速轉動，不自動回正）
+    // 更新方向盤角度（更慢的轉動速度，不自動回正）
     if (controls.left) {
       newCar.steeringAngle = Math.max(
-        newCar.steeringAngle - 0.02,  // 降低速度，更慢
+        newCar.steeringAngle - 0.008,  // 再次降低速度
         -MAX_STEERING_ANGLE
       );
     } else if (controls.right) {
       newCar.steeringAngle = Math.min(
-        newCar.steeringAngle + 0.02,  // 降低速度，更慢
+        newCar.steeringAngle + 0.008,  // 再次降低速度
         MAX_STEERING_ANGLE
       );
     }
@@ -309,10 +389,13 @@ const SimpleCar = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-100 text-center">
-          簡單車輛控制系統 v3.0.1
+          停車挑戰 v3.1.0
         </h1>
         <p className="text-gray-400 text-center mt-2">
-          使用方向鍵控制車輛：↑ 前進、↓ 後退、← 左轉、→ 右轉
+          使用方向鍵控制車輛停入黃色停車格：↑ 前進、↓ 後退、← 左轉、→ 右轉
+        </p>
+        <p className="text-yellow-400 text-center mt-1 text-sm">
+          🎯 目標：將車輛準確停入停車格（距離 &lt; 20px，角度差 &lt; 5°，速度接近0）
         </p>
       </div>
 
@@ -368,15 +451,17 @@ const SimpleCar = () => {
       </div>
 
       <div className="mt-4 p-4 bg-gray-800 rounded-lg max-w-2xl">
-        <h2 className="text-lg font-semibold text-gray-100 mb-2">核心功能</h2>
+        <h2 className="text-lg font-semibold text-gray-100 mb-2">遊戲特色</h2>
         <ul className="text-gray-300 space-y-1 text-sm">
           <li>✅ 清晰的車輛視覺化（藍色車身 + 可見的前後輪）</li>
-          <li>✅ 方向盤控制前輪轉動（左右方向鍵，慢速轉動）</li>
-          <li>✅ 前進/後退控制（上下方向鍵）</li>
+          <li>✅ 超慢速轉向（0.008 rad/frame）更真實的方向盤體驗</li>
+          <li>✅ 降低車速（最大速度 2px/frame）更易控制</li>
           <li>✅ 真實的車輛物理（Ackermann 轉向，沿著前輪方向移動）</li>
-          <li>✅ 前輪有藍色邊框表示可轉動</li>
+          <li>✅ 視覺化方向盤UI實時顯示轉向角度</li>
+          <li>✅ 視覺化速度表顯示當前速度</li>
+          <li>✅ 停車格挑戰（黃色虛線標記）</li>
+          <li>✅ 即時停車狀態反饋（距離、角度差）</li>
           <li>✅ 方向盤不會自動回正（需手動調整）</li>
-          <li>✅ 視覺化方向盤UI顯示當前角度</li>
         </ul>
       </div>
     </div>
