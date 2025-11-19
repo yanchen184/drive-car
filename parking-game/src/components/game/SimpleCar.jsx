@@ -153,25 +153,19 @@ const SimpleCar = () => {
   const updateCarPhysics = (car, controls) => {
     const newCar = { ...car };
 
-    // 更新方向盤角度
+    // 更新方向盤角度（慢速轉動，不自動回正）
     if (controls.left) {
       newCar.steeringAngle = Math.max(
-        newCar.steeringAngle - 0.05,
+        newCar.steeringAngle - 0.02,  // 降低速度，更慢
         -MAX_STEERING_ANGLE
       );
     } else if (controls.right) {
       newCar.steeringAngle = Math.min(
-        newCar.steeringAngle + 0.05,
+        newCar.steeringAngle + 0.02,  // 降低速度，更慢
         MAX_STEERING_ANGLE
       );
-    } else {
-      // 自動回正
-      if (Math.abs(newCar.steeringAngle) > 0.01) {
-        newCar.steeringAngle *= 0.9;
-      } else {
-        newCar.steeringAngle = 0;
-      }
     }
+    // 移除自動回正功能
 
     // 更新速度
     if (controls.forward) {
@@ -315,28 +309,74 @@ const SimpleCar = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-100 text-center">
-          簡單車輛控制系統 v3.0.0
+          簡單車輛控制系統 v3.0.1
         </h1>
         <p className="text-gray-400 text-center mt-2">
           使用方向鍵控制車輛：↑ 前進、↓ 後退、← 左轉、→ 右轉
         </p>
       </div>
 
-      <canvas
-        ref={canvasRef}
-        className="border-4 border-gray-700 rounded-lg shadow-2xl"
-        data-testid="car-canvas"
-      />
+      <div className="relative">
+        <canvas
+          ref={canvasRef}
+          className="border-4 border-gray-700 rounded-lg shadow-2xl"
+          data-testid="car-canvas"
+        />
+
+        {/* 方向盤UI - 左下角 */}
+        <div className="absolute bottom-4 left-4 flex flex-col items-center">
+          <div className="text-xs text-gray-400 mb-2">方向盤</div>
+          <div className="relative w-32 h-32 bg-gray-800 rounded-full border-4 border-gray-600 shadow-lg">
+            {/* 方向盤外圈 */}
+            <div className="absolute inset-2 bg-gray-700 rounded-full border-2 border-gray-500">
+              {/* 方向盤中心 */}
+              <div
+                className="absolute inset-0 flex items-center justify-center transition-transform"
+                style={{
+                  transform: `rotate(${carState.steeringAngle * (180 / Math.PI) * 3}deg)` // 放大旋轉角度以便觀察
+                }}
+              >
+                {/* 方向盤握把 */}
+                <div className="absolute w-1 h-16 bg-blue-400 rounded-full" style={{ top: '8px' }}></div>
+                <div className="absolute w-16 h-1 bg-blue-400 rounded-full"></div>
+                {/* 中心點 */}
+                <div className="w-8 h-8 bg-gray-900 rounded-full border-2 border-blue-400 flex items-center justify-center">
+                  <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="text-xs text-gray-400 mt-2">
+            {(carState.steeringAngle * 180 / Math.PI).toFixed(0)}°
+          </div>
+        </div>
+
+        {/* 速度表 - 右下角 */}
+        <div className="absolute bottom-4 right-4 flex flex-col items-center">
+          <div className="text-xs text-gray-400 mb-2">速度</div>
+          <div className="w-24 h-24 bg-gray-800 rounded-full border-4 border-gray-600 shadow-lg flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-400">
+                {Math.abs(carState.speed).toFixed(1)}
+              </div>
+              <div className="text-xs text-gray-400">
+                {carState.speed > 0 ? '前進' : carState.speed < 0 ? '後退' : '靜止'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="mt-4 p-4 bg-gray-800 rounded-lg max-w-2xl">
         <h2 className="text-lg font-semibold text-gray-100 mb-2">核心功能</h2>
         <ul className="text-gray-300 space-y-1 text-sm">
           <li>✅ 清晰的車輛視覺化（藍色車身 + 可見的前後輪）</li>
-          <li>✅ 方向盤控制前輪轉動（左右方向鍵）</li>
+          <li>✅ 方向盤控制前輪轉動（左右方向鍵，慢速轉動）</li>
           <li>✅ 前進/後退控制（上下方向鍵）</li>
           <li>✅ 真實的車輛物理（Ackermann 轉向，沿著前輪方向移動）</li>
           <li>✅ 前輪有藍色邊框表示可轉動</li>
-          <li>✅ 方向盤會自動回正</li>
+          <li>✅ 方向盤不會自動回正（需手動調整）</li>
+          <li>✅ 視覺化方向盤UI顯示當前角度</li>
         </ul>
       </div>
     </div>
