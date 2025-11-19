@@ -19,9 +19,13 @@ const SimpleCar = () => {
     right: false,
   });
 
-  // 可調整的速度參數
-  const [maxSpeed, setMaxSpeed] = useState(2);
-  const [steeringSpeed, setSteeringSpeed] = useState(0.008);
+  // 可調整的速度參數（使用 useRef 避免閉包問題）
+  const maxSpeedRef = useRef(2);
+  const steeringSpeedRef = useRef(0.008);
+
+  // 顯示用的狀態（觸發重新渲染以更新 UI 顯示）
+  const [maxSpeedDisplay, setMaxSpeedDisplay] = useState(2);
+  const [steeringSpeedDisplay, setSteeringSpeedDisplay] = useState(0.008);
 
   // 車輛狀態
   const [carState, setCarState] = useState({
@@ -240,12 +244,12 @@ const SimpleCar = () => {
     // 更新方向盤角度（使用可調整的轉向速度，不自動回正）
     if (controls.left) {
       newCar.steeringAngle = Math.max(
-        newCar.steeringAngle - steeringSpeed,  // 使用可調整的轉向速度
+        newCar.steeringAngle - steeringSpeedRef.current,  // 使用 ref 中的轉向速度
         -MAX_STEERING_ANGLE
       );
     } else if (controls.right) {
       newCar.steeringAngle = Math.min(
-        newCar.steeringAngle + steeringSpeed,  // 使用可調整的轉向速度
+        newCar.steeringAngle + steeringSpeedRef.current,  // 使用 ref 中的轉向速度
         MAX_STEERING_ANGLE
       );
     }
@@ -253,9 +257,9 @@ const SimpleCar = () => {
 
     // 更新速度（使用可調整的最大速度）
     if (controls.forward) {
-      newCar.speed = Math.min(newCar.speed + newCar.acceleration, maxSpeed);
+      newCar.speed = Math.min(newCar.speed + newCar.acceleration, maxSpeedRef.current);
     } else if (controls.backward) {
-      newCar.speed = Math.max(newCar.speed - newCar.acceleration, -maxSpeed / 2);
+      newCar.speed = Math.max(newCar.speed - newCar.acceleration, -maxSpeedRef.current / 2);
     } else {
       // 應用摩擦力
       newCar.speed *= newCar.friction;
@@ -418,12 +422,16 @@ const SimpleCar = () => {
               min="0.5"
               max="5"
               step="0.1"
-              value={maxSpeed}
-              onChange={(e) => setMaxSpeed(parseFloat(e.target.value))}
+              value={maxSpeedDisplay}
+              onChange={(e) => {
+                const value = parseFloat(e.target.value);
+                maxSpeedRef.current = value;  // 更新 ref（立即生效）
+                setMaxSpeedDisplay(value);     // 更新顯示狀態
+              }}
               className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
             <span className="text-blue-400 font-mono text-sm w-16 text-right">
-              {maxSpeed.toFixed(1)}
+              {maxSpeedDisplay.toFixed(1)}
             </span>
           </div>
 
@@ -437,12 +445,16 @@ const SimpleCar = () => {
               min="0.001"
               max="0.02"
               step="0.001"
-              value={steeringSpeed}
-              onChange={(e) => setSteeringSpeed(parseFloat(e.target.value))}
+              value={steeringSpeedDisplay}
+              onChange={(e) => {
+                const value = parseFloat(e.target.value);
+                steeringSpeedRef.current = value;  // 更新 ref（立即生效）
+                setSteeringSpeedDisplay(value);     // 更新顯示狀態
+              }}
               className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500"
             />
             <span className="text-green-400 font-mono text-sm w-16 text-right">
-              {steeringSpeed.toFixed(3)}
+              {steeringSpeedDisplay.toFixed(3)}
             </span>
           </div>
         </div>
