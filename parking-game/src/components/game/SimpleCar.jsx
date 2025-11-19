@@ -20,12 +20,16 @@ const SimpleCar = () => {
   });
 
   // 可調整的速度參數（使用 useRef 避免閉包問題）
-  const maxSpeedRef = useRef(2);
-  const steeringSpeedRef = useRef(0.008);
+  const maxSpeedRef = useRef(0.5);
+  const steeringSpeedRef = useRef(0.001);
 
   // 顯示用的狀態（觸發重新渲染以更新 UI 顯示）
-  const [maxSpeedDisplay, setMaxSpeedDisplay] = useState(2);
-  const [steeringSpeedDisplay, setSteeringSpeedDisplay] = useState(0.008);
+  const [maxSpeedDisplay, setMaxSpeedDisplay] = useState(0.5);
+  const [steeringSpeedDisplay, setSteeringSpeedDisplay] = useState(0.001);
+
+  // 停車成功狀態
+  const [parkingSuccess, setParkingSuccess] = useState(false);
+  const parkingSuccessRef = useRef(false);
 
   // 車輛狀態
   const [carState, setCarState] = useState({
@@ -210,6 +214,12 @@ const SimpleCar = () => {
     // 檢查停車狀態
     const parkingStatus = checkParking(car, parkingSpot);
 
+    // 檢測停車成功並觸發慶祝
+    if (parkingStatus.success && !parkingSuccessRef.current) {
+      parkingSuccessRef.current = true;
+      setParkingSuccess(true);
+    }
+
     // 繪製資訊面板
     ctx.fillStyle = '#F3F4F6';
     ctx.font = '14px monospace';
@@ -223,6 +233,45 @@ const SimpleCar = () => {
     if (parkingStatus.success) {
       ctx.fillStyle = '#10B981'; // 綠色
       ctx.fillText('✓ 停車成功！', 10, 110);
+
+      // 繪製大型成功訊息覆蓋層
+      ctx.save();
+
+      // 半透明深色背景
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 成功訊息框
+      const boxWidth = 500;
+      const boxHeight = 250;
+      const boxX = (canvas.width - boxWidth) / 2;
+      const boxY = (canvas.height - boxHeight) / 2;
+
+      // 背景框
+      ctx.fillStyle = '#1F2937';
+      ctx.strokeStyle = '#10B981';
+      ctx.lineWidth = 4;
+      ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+      ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+      // 成功標題
+      ctx.fillStyle = '#10B981';
+      ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🎉 停車成功！', canvas.width / 2, boxY + 70);
+
+      // 第0關完成訊息
+      ctx.fillStyle = '#F3F4F6';
+      ctx.font = 'bold 24px Arial';
+      ctx.fillText('第 0 關 - 教學關卡完成', canvas.width / 2, boxY + 130);
+
+      // 提示訊息
+      ctx.font = '16px Arial';
+      ctx.fillStyle = '#9CA3AF';
+      ctx.fillText('您已掌握基本停車技巧', canvas.width / 2, boxY + 180);
+
+      ctx.restore();
     } else {
       ctx.fillStyle = '#9CA3AF';
       ctx.fillText(`距離: ${parkingStatus.distance.toFixed(1)}px`, 10, 110);
@@ -397,7 +446,7 @@ const SimpleCar = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-100 text-center">
-          停車挑戰 v3.2.0
+          停車挑戰 v3.2.0 - 第 0 關（教學關）
         </h1>
         <p className="text-gray-400 text-center mt-2">
           使用方向鍵控制車輛停入黃色停車格：↑ 前進、↓ 後退、← 左轉、→ 右轉
@@ -516,7 +565,7 @@ const SimpleCar = () => {
       </div>
 
       <div className="mt-4 p-4 bg-gray-800 rounded-lg max-w-2xl">
-        <h2 className="text-lg font-semibold text-gray-100 mb-2">遊戲特色</h2>
+        <h2 className="text-lg font-semibold text-gray-100 mb-2">🎓 教學關卡 - 學習基本停車技巧</h2>
         <ul className="text-gray-300 space-y-1 text-sm">
           <li>✅ 清晰的車輛視覺化（藍色車身 + 可見的前後輪）</li>
           <li>✅ <span className="text-yellow-400 font-semibold">可調整速度控制</span>（滑桿即時調整車速和轉向速度）</li>
@@ -527,6 +576,7 @@ const SimpleCar = () => {
           <li>✅ 即時停車狀態反饋（距離、角度差）</li>
           <li>✅ 方向盤不會自動回正（需手動調整）</li>
           <li>✅ 自訂控制感受，找到最適合您的速度設定</li>
+          <li>🎯 <span className="text-green-400 font-semibold">完成本關後解鎖更多停車挑戰</span></li>
         </ul>
       </div>
     </div>
