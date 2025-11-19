@@ -19,6 +19,10 @@ const SimpleCar = () => {
     right: false,
   });
 
+  // 可調整的速度參數
+  const [maxSpeed, setMaxSpeed] = useState(2);
+  const [steeringSpeed, setSteeringSpeed] = useState(0.008);
+
   // 車輛狀態
   const [carState, setCarState] = useState({
     x: 200,           // 車輛中心 x 座標（起始位置調整）
@@ -233,25 +237,25 @@ const SimpleCar = () => {
   const updateCarPhysics = (car, controls) => {
     const newCar = { ...car };
 
-    // 更新方向盤角度（更慢的轉動速度，不自動回正）
+    // 更新方向盤角度（使用可調整的轉向速度，不自動回正）
     if (controls.left) {
       newCar.steeringAngle = Math.max(
-        newCar.steeringAngle - 0.008,  // 再次降低速度
+        newCar.steeringAngle - steeringSpeed,  // 使用可調整的轉向速度
         -MAX_STEERING_ANGLE
       );
     } else if (controls.right) {
       newCar.steeringAngle = Math.min(
-        newCar.steeringAngle + 0.008,  // 再次降低速度
+        newCar.steeringAngle + steeringSpeed,  // 使用可調整的轉向速度
         MAX_STEERING_ANGLE
       );
     }
     // 移除自動回正功能
 
-    // 更新速度
+    // 更新速度（使用可調整的最大速度）
     if (controls.forward) {
-      newCar.speed = Math.min(newCar.speed + newCar.acceleration, newCar.maxSpeed);
+      newCar.speed = Math.min(newCar.speed + newCar.acceleration, maxSpeed);
     } else if (controls.backward) {
-      newCar.speed = Math.max(newCar.speed - newCar.acceleration, -newCar.maxSpeed / 2);
+      newCar.speed = Math.max(newCar.speed - newCar.acceleration, -maxSpeed / 2);
     } else {
       // 應用摩擦力
       newCar.speed *= newCar.friction;
@@ -389,13 +393,62 @@ const SimpleCar = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-100 text-center">
-          停車挑戰 v3.1.0
+          停車挑戰 v3.2.0
         </h1>
         <p className="text-gray-400 text-center mt-2">
           使用方向鍵控制車輛停入黃色停車格：↑ 前進、↓ 後退、← 左轉、→ 右轉
         </p>
         <p className="text-yellow-400 text-center mt-1 text-sm">
           🎯 目標：將車輛準確停入停車格（距離 &lt; 20px，角度差 &lt; 5°，速度接近0）
+        </p>
+      </div>
+
+      {/* 速度控制滑桿 */}
+      <div className="mb-4 p-4 bg-gray-800 rounded-lg w-full max-w-2xl">
+        <h2 className="text-lg font-semibold text-gray-100 mb-3 text-center">⚙️ 速度調整控制</h2>
+
+        <div className="space-y-4">
+          {/* 車輛速度滑桿 */}
+          <div className="flex items-center gap-4">
+            <label className="text-gray-300 w-32 text-sm font-medium">
+              🚗 車輛速度:
+            </label>
+            <input
+              type="range"
+              min="0.5"
+              max="5"
+              step="0.1"
+              value={maxSpeed}
+              onChange={(e) => setMaxSpeed(parseFloat(e.target.value))}
+              className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            />
+            <span className="text-blue-400 font-mono text-sm w-16 text-right">
+              {maxSpeed.toFixed(1)}
+            </span>
+          </div>
+
+          {/* 轉向速度滑桿 */}
+          <div className="flex items-center gap-4">
+            <label className="text-gray-300 w-32 text-sm font-medium">
+              🎯 轉向速度:
+            </label>
+            <input
+              type="range"
+              min="0.001"
+              max="0.02"
+              step="0.001"
+              value={steeringSpeed}
+              onChange={(e) => setSteeringSpeed(parseFloat(e.target.value))}
+              className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500"
+            />
+            <span className="text-green-400 font-mono text-sm w-16 text-right">
+              {steeringSpeed.toFixed(3)}
+            </span>
+          </div>
+        </div>
+
+        <p className="text-gray-500 text-xs text-center mt-3">
+          💡 拖動滑桿即時調整速度，找到最適合您的控制感覺
         </p>
       </div>
 
@@ -454,14 +507,14 @@ const SimpleCar = () => {
         <h2 className="text-lg font-semibold text-gray-100 mb-2">遊戲特色</h2>
         <ul className="text-gray-300 space-y-1 text-sm">
           <li>✅ 清晰的車輛視覺化（藍色車身 + 可見的前後輪）</li>
-          <li>✅ 超慢速轉向（0.008 rad/frame）更真實的方向盤體驗</li>
-          <li>✅ 降低車速（最大速度 2px/frame）更易控制</li>
+          <li>✅ <span className="text-yellow-400 font-semibold">可調整速度控制</span>（滑桿即時調整車速和轉向速度）</li>
           <li>✅ 真實的車輛物理（Ackermann 轉向，沿著前輪方向移動）</li>
           <li>✅ 視覺化方向盤UI實時顯示轉向角度</li>
           <li>✅ 視覺化速度表顯示當前速度</li>
           <li>✅ 停車格挑戰（黃色虛線標記）</li>
           <li>✅ 即時停車狀態反饋（距離、角度差）</li>
           <li>✅ 方向盤不會自動回正（需手動調整）</li>
+          <li>✅ 自訂控制感受，找到最適合您的速度設定</li>
         </ul>
       </div>
     </div>

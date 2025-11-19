@@ -12,10 +12,10 @@ test.describe('簡單車輛控制系統測試', () => {
 
   test('頁面載入測試 - 顯示標題和控制說明', async ({ page }) => {
     // 檢查標題
-    await expect(page.getByRole('heading', { name: /簡單車輛控制系統/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /停車挑戰/i })).toBeVisible();
 
     // 檢查版本號
-    await expect(page.getByText(/v3.0.0/i)).toBeVisible();
+    await expect(page.getByText(/v3.2.0/i)).toBeVisible();
 
     // 檢查控制說明
     await expect(page.getByText(/使用方向鍵控制車輛/i)).toBeVisible();
@@ -26,9 +26,9 @@ test.describe('簡單車輛控制系統測試', () => {
 
     // 檢查核心功能列表
     await expect(page.getByText(/清晰的車輛視覺化/i)).toBeVisible();
-    await expect(page.getByText(/方向盤控制前輪轉動/i)).toBeVisible();
-    await expect(page.getByText(/前進\/後退控制/i)).toBeVisible();
+    await expect(page.getByText(/可調整速度控制/i)).toBeVisible();
     await expect(page.getByText(/真實的車輛物理/i)).toBeVisible();
+    await expect(page.getByText(/停車格挑戰/i)).toBeVisible();
   });
 
   test('Canvas 尺寸測試', async ({ page }) => {
@@ -248,7 +248,7 @@ test.describe('簡單車輛控制系統測試', () => {
     await page.waitForTimeout(1000);
 
     // 驗證版本資訊有輸出
-    const hasVersionInfo = consoleMessages.some(msg => msg.includes('v3.0.0'));
+    const hasVersionInfo = consoleMessages.some(msg => msg.includes('v3.2.0'));
     expect(hasVersionInfo).toBeTruthy();
 
     // 驗證物理模型資訊

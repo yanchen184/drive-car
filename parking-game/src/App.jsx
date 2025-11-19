@@ -18,10 +18,10 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.1.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c簡單車輛控制系統 + 停車格挑戰', 'color: #10B981; font-size: 14px');
+    console.log('%c🚗 停車挑戰 v3.2.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c簡單車輛控制系統 + 停車格挑戰 + 可調整速度控制', 'color: #10B981; font-size: 14px');
     console.log('物理模型: Ackermann 轉向');
-    console.log('控制方式: 方向鍵');
+    console.log('控制方式: 方向鍵 + 滑桿調整速度');
     console.log('挑戰目標: 準確停入黃色停車格');
   }, []);
 
