@@ -12,6 +12,12 @@ import React, { useRef, useEffect, useState } from 'react';
 const SimpleCar = () => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
+  const controlsRef = useRef({
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+  });
 
   // 車輛狀態
   const [carState, setCarState] = useState({
@@ -24,14 +30,6 @@ const SimpleCar = () => {
     acceleration: 0.2,// 加速度
     friction: 0.95,   // 摩擦力
     wheelBase: 80,    // 軸距（前後輪距離）
-  });
-
-  // 控制輸入狀態
-  const [controls, setControls] = useState({
-    forward: false,
-    backward: false,
-    left: false,
-    right: false,
   });
 
   // 車輛尺寸常數
@@ -224,11 +222,13 @@ const SimpleCar = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 更新車輛物理
-    setCarState(prevCar => updateCarPhysics(prevCar, controls));
-
-    // 繪製場景
-    drawScene(ctx, canvas, carState);
+    // 更新車輛物理並繪製
+    setCarState(prevCar => {
+      const newCar = updateCarPhysics(prevCar, controlsRef.current);
+      // 同步繪製新狀態
+      drawScene(ctx, canvas, newCar);
+      return newCar;
+    });
 
     // 繼續動畫循環
     animationRef.current = requestAnimationFrame(gameLoop);
@@ -243,16 +243,16 @@ const SimpleCar = () => {
 
       switch (e.key) {
         case 'ArrowUp':
-          setControls(prev => ({ ...prev, forward: true }));
+          controlsRef.current.forward = true;
           break;
         case 'ArrowDown':
-          setControls(prev => ({ ...prev, backward: true }));
+          controlsRef.current.backward = true;
           break;
         case 'ArrowLeft':
-          setControls(prev => ({ ...prev, left: true }));
+          controlsRef.current.left = true;
           break;
         case 'ArrowRight':
-          setControls(prev => ({ ...prev, right: true }));
+          controlsRef.current.right = true;
           break;
         default:
           break;
@@ -262,16 +262,16 @@ const SimpleCar = () => {
     const handleKeyUp = (e) => {
       switch (e.key) {
         case 'ArrowUp':
-          setControls(prev => ({ ...prev, forward: false }));
+          controlsRef.current.forward = false;
           break;
         case 'ArrowDown':
-          setControls(prev => ({ ...prev, backward: false }));
+          controlsRef.current.backward = false;
           break;
         case 'ArrowLeft':
-          setControls(prev => ({ ...prev, left: false }));
+          controlsRef.current.left = false;
           break;
         case 'ArrowRight':
-          setControls(prev => ({ ...prev, right: false }));
+          controlsRef.current.right = false;
           break;
         default:
           break;
@@ -310,19 +310,6 @@ const SimpleCar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /**
-   * 當控制或車輛狀態改變時觸發重繪
-   */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    drawScene(ctx, canvas, carState);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [carState]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
