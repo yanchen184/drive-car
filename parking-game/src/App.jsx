@@ -6,6 +6,7 @@ import GearControls from './components/controls/GearControls';
 import HUD from './components/ui/HUD';
 import GameCanvas from './components/game/GameCanvas';
 import SimpleCar from './components/game/SimpleCar';
+import Level from './components/game/Level';
 import LevelComplete from './components/ui/LevelComplete';
 import LevelFailed from './components/ui/LevelFailed';
 import PauseMenu from './components/ui/PauseMenu';
@@ -86,14 +87,20 @@ function App() {
   };
 
   const handleStartGame = () => {
-    // 直接進入簡單模式
+    // 進入關卡選擇
+    setCurrentScreen('levelSelect');
+  };
+
+  const handleTutorial = () => {
+    // 進入教學關（SimpleCar - 第0關）
     setCurrentScreen('simple');
   };
 
   const handleSelectLevel = async (levelNumber) => {
     const data = await loadLevel(levelNumber);
     if (data) {
-      setCurrentScreen('game');
+      // 使用新的 Level 組件（支援障礙物和完整關卡系統）
+      setCurrentScreen('level');
       // Reset game state
       setSteeringInput(0);
       setGearInput('P');
@@ -278,7 +285,7 @@ function App() {
     return (
       <MainMenu
         onStartGame={handleStartGame}
-        onTutorial={() => console.log('Tutorial')}
+        onTutorial={handleTutorial}
         onSettings={() => console.log('Settings')}
         onLeaderboard={() => console.log('Leaderboard')}
       />
@@ -296,6 +303,16 @@ function App() {
         onBack={() => setCurrentScreen('menu')}
         unlockedLevels={gameProgress?.unlockedLevels || 1}
         levelScores={gameProgress?.levelScores || {}}
+      />
+    );
+  }
+
+  if (currentScreen === 'level') {
+    return (
+      <Level
+        levelData={levelData}
+        onLevelComplete={handleLevelComplete}
+        onLevelFailed={handleLevelFailed}
       />
     );
   }
