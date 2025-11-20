@@ -37,6 +37,8 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   const [completionStats, setCompletionStats] = useState({});
   const gameStartTimeRef = useRef(null);
   const collisionsRef = useRef(0);
+  const [collisionFlash, setCollisionFlash] = useState(false);
+  const lastCollisionTimeRef = useRef(0);
 
   // 車輛狀態
   const [carState, setCarState] = useState({
@@ -208,34 +210,117 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   };
 
   /**
-   * 檢查碰撞（簡化版矩形碰撞）
+   * 獲取旋轉矩形的四個頂點座標
+   */
+  const getRotatedRectPoints = (x, y, width, height, angle) => {
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+
+    // 四個頂點（相對於中心點）
+    const corners = [
+      { x: -halfWidth, y: -halfHeight },
+      { x: halfWidth, y: -halfHeight },
+      { x: halfWidth, y: halfHeight },
+      { x: -halfWidth, y: halfHeight },
+    ];
+
+    // 旋轉並平移到實際位置
+    return corners.map(corner => ({
+      x: x + (corner.x * cos - corner.y * sin),
+      y: y + (corner.x * sin + corner.y * cos),
+    }));
+  };
+
+  /**
+   * 分離軸定理 (SAT) 碰撞檢測
+   */
+  const checkSATCollision = (points1, points2) => {
+    const polygons = [points1, points2];
+
+    for (const polygon of polygons) {
+      for (let i = 0; i < polygon.length; i++) {
+        const p1 = polygon[i];
+        const p2 = polygon[(i + 1) % polygon.length];
+
+        // 計算法向量（垂直於邊）
+        const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
+        const normal = { x: -edge.y, y: edge.x };
+
+        // 投影兩個多邊形到法向量上
+        let min1 = Infinity, max1 = -Infinity;
+        let min2 = Infinity, max2 = -Infinity;
+
+        for (const point of points1) {
+          const projection = normal.x * point.x + normal.y * point.y;
+          min1 = Math.min(min1, projection);
+          max1 = Math.max(max1, projection);
+        }
+
+        for (const point of points2) {
+          const projection = normal.x * point.x + normal.y * point.y;
+          min2 = Math.min(min2, projection);
+          max2 = Math.max(max2, projection);
+        }
+
+        // 檢查投影是否重疊
+        if (max1 < min2 || max2 < min1) {
+          return false; // 找到分離軸，無碰撞
+        }
+      }
+    }
+
+    return true; // 所有軸都重疊，有碰撞
+  };
+
+  /**
+   * 檢查碰撞（使用旋轉矩形碰撞檢測）
    */
   const checkCollision = (car, obstacles) => {
     if (!obstacles || obstacles.length === 0) return false;
 
-    const carRect = {
-      left: car.x - CAR_WIDTH / 2,
-      right: car.x + CAR_WIDTH / 2,
-      top: car.y - CAR_LENGTH / 2,
-      bottom: car.y + CAR_LENGTH / 2,
-    };
+    // 獲取車輛的旋轉矩形頂點
+    const carPoints = getRotatedRectPoints(car.x, car.y, CAR_WIDTH, CAR_LENGTH, car.angle);
 
     for (const obstacle of obstacles) {
-      const obstacleRect = {
-        left: obstacle.x - obstacle.width / 2,
-        right: obstacle.x + obstacle.width / 2,
-        top: obstacle.y - obstacle.height / 2,
-        bottom: obstacle.y + obstacle.height / 2,
-      };
+      // 特殊處理圓形障礙物（pillar）
+      if (obstacle.type === 'pillar') {
+        // 使用圓形碰撞檢測
+        const radius = obstacle.width / 2;
+        let minDist = Infinity;
 
-      // AABB 碰撞檢測
-      if (
-        carRect.left < obstacleRect.right &&
-        carRect.right > obstacleRect.left &&
-        carRect.top < obstacleRect.bottom &&
-        carRect.bottom > obstacleRect.top
-      ) {
-        return true;
+        // 檢查圓心到車輛各邊的最短距離
+        for (const point of carPoints) {
+          const dx = point.x - obstacle.x;
+          const dy = point.y - obstacle.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          minDist = Math.min(minDist, dist);
+        }
+
+        // 檢查車輛中心到圓心的距離
+        const centerDx = car.x - obstacle.x;
+        const centerDy = car.y - obstacle.y;
+        const centerDist = Math.sqrt(centerDx * centerDx + centerDy * centerDy);
+
+        if (centerDist < radius + Math.max(CAR_WIDTH, CAR_LENGTH) / 2) {
+          if (minDist < radius) {
+            return true;
+          }
+        }
+      } else {
+        // 矩形障礙物使用 SAT 碰撞檢測
+        const obstaclePoints = getRotatedRectPoints(
+          obstacle.x,
+          obstacle.y,
+          obstacle.width,
+          obstacle.height,
+          obstacle.angle || 0
+        );
+
+        if (checkSATCollision(carPoints, obstaclePoints)) {
+          return true;
+        }
       }
     }
 
@@ -355,7 +440,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
       ctx.fillStyle = '#10B981';
       ctx.fillText('✓ 停車成功！(≥80%)', 10, 185);
 
-      // 顯示完成覆蓋層
+      // 記錄完成但不顯示完整覆蓋層（改為顯示浮動按鈕）
       if (!gameCompletedRef.current) {
         gameCompletedRef.current = true;
         const elapsed = (Date.now() - gameStartTimeRef.current) / 1000;
@@ -364,7 +449,6 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
           accuracy: percentage,
           collisions: collisionsRef.current,
         });
-        setShowCompletionOverlay(true);
 
         // 觸發完成事件（可選）
         if (onLevelComplete) {
@@ -432,10 +516,25 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     }
 
     // 碰撞檢測
-    if (checkCollision(newCar, levelData?.obstacles)) {
+    const hasCollision = checkCollision(newCar, levelData?.obstacles);
+    const now = Date.now();
+
+    if (hasCollision && now - lastCollisionTimeRef.current > 500) {
+      // 防止短時間內重複計數
+      lastCollisionTimeRef.current = now;
       collisionsRef.current += 1;
-      // 碰撞後停車
-      newCar.speed = 0;
+
+      // 碰撞視覺反饋
+      setCollisionFlash(true);
+      setTimeout(() => setCollisionFlash(false), 200);
+
+      // 碰撞音效
+      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+      audio.volume = 0.3;
+      audio.play().catch(err => console.log('Audio play failed:', err));
+
+      // 碰撞後停車並輕微反彈
+      newCar.speed = -newCar.speed * 0.3;
     }
 
     return newCar;
@@ -598,7 +697,37 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4 relative">
+    <div className={`flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4 relative transition-all duration-200 ${collisionFlash ? 'bg-red-900' : ''}`}>
+      {/* 碰撞視覺提示 */}
+      {collisionFlash && (
+        <div className="fixed inset-0 bg-red-500 opacity-30 pointer-events-none z-40 animate-pulse"></div>
+      )}
+
+      {/* 浮動的下一關按鈕（停車成功時顯示）*/}
+      {gameCompletedRef.current && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col gap-4">
+          <div className="bg-green-500 text-white px-8 py-4 rounded-2xl shadow-2xl text-center animate-bounce">
+            <div className="text-4xl mb-2">🎉</div>
+            <div className="text-2xl font-bold mb-2">停車成功！</div>
+            <div className="text-lg">精準度: {completionStats.accuracy}%</div>
+            <div className="text-sm opacity-90">時間: {completionStats.timeTaken?.toFixed(1)}s</div>
+          </div>
+          <button
+            onClick={handleNextLevel}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl text-xl transition-all duration-200 shadow-2xl hover:scale-105"
+            data-testid="instant-next-level-button"
+          >
+            ➡️ 下一關
+          </button>
+          <button
+            onClick={handleBackToMenu}
+            className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 shadow-xl"
+          >
+            🏠 返回主選單
+          </button>
+        </div>
+      )}
+
       {/* 頂部控制按鈕 */}
       <div className="absolute top-4 right-4 flex gap-3 z-10">
         <button

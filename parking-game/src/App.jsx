@@ -19,11 +19,13 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.3.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c新功能: 停車百分比顯示 + 更大車輛和場地 + 完成後按鈕', 'color: #10B981; font-size: 14px');
-    console.log('✨ 停車精準度百分比系統（超過 80% 算成功）');
-    console.log('✨ 車輛尺寸增加 50%，場地尺寸增加 50%');
-    console.log('✨ 完成關卡後顯示「下一關」和「返回主選單」按鈕');
+    console.log('%c🚗 停車挑戰 v3.4.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c新功能: 修復碰撞檢測 + 碰撞音效 + 即時下一關按鈕 + 關卡重新設計', 'color: #10B981; font-size: 14px');
+    console.log('✅ 修復旋轉矩形碰撞檢測（SAT演算法）');
+    console.log('✅ 添加碰撞音效和視覺反饋（紅色閃爍）');
+    console.log('✅ 停車成功後立即顯示浮動按鈕');
+    console.log('✅ 調整所有關卡尺寸適配新車輛大小');
+    console.log('✅ 第一關重新設計為直線後退停車');
     console.log('物理模型: Ackermann 轉向');
     console.log('控制方式: 方向鍵 + 滑桿調整速度');
   }, []);
