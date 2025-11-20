@@ -1,38 +1,46 @@
 {
   "levelNumber": 2,
-  "title": "Simple Parallel Parking",
+  "title": "Forward Curb Parking",
   "difficulty": "beginner",
   "parkingSpot": {
-    "x": 600,
-    "y": 350,
-    "width": 90,
-    "height": 150,
+    "x": 400,
+    "y": 200,
+    "width": 75,
+    "height": 115,
     "angle": 0
   },
   "obstacles": [
     {
-      "type": "car",
-      "x": 600,
-      "y": 180,
-      "width": 90,
-      "height": 150,
+      "type": "sidewalk",
+      "x": 400,
+      "y": 130,
+      "width": 600,
+      "height": 40,
+      "angle": 0
+    },
+    {
+      "type": "curb",
+      "x": 400,
+      "y": 152,
+      "width": 600,
+      "height": 5,
       "angle": 0
     }
   ],
   "carStartPosition": {
-    "x": 300,
-    "y": 400,
+    "x": 400,
+    "y": 500,
     "angle": 0
   },
-  "timeLimit": null,
+  "timeLimit": 100,
   "par": {
-    "time": 45,
-    "accuracy": 88,
+    "time": 50,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Position your car parallel to the parked car",
-    "Reverse slowly into the space",
-    "Use small steering adjustments"
+    "Drive forward to the curb",
+    "Don't mount the sidewalk",
+    "Align parallel to the curb"
   ]
 }

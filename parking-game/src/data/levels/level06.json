@@ -1,19 +1,19 @@
 {
   "levelNumber": 6,
-  "title": "Parallel Parking Challenge",
+  "title": "Full Parallel Parking",
   "difficulty": "intermediate",
   "parkingSpot": {
     "x": 350,
-    "y": 300,
-    "width": 90,
-    "height": 130,
+    "y": 250,
+    "width": 75,
+    "height": 120,
     "angle": 0
   },
   "obstacles": [
     {
       "type": "car",
       "x": 350,
-      "y": 190,
+      "y": 155,
       "width": 65,
       "height": 105,
       "angle": 0
@@ -21,34 +21,42 @@
     {
       "type": "car",
       "x": 350,
-      "y": 410,
+      "y": 345,
       "width": 65,
       "height": 105,
       "angle": 0
     },
     {
-      "type": "wall",
-      "x": 280,
-      "y": 300,
-      "width": 10,
-      "height": 400,
+      "type": "sidewalk",
+      "x": 350,
+      "y": 100,
+      "width": 400,
+      "height": 40,
+      "angle": 0
+    },
+    {
+      "type": "pillar",
+      "x": 500,
+      "y": 250,
+      "width": 20,
+      "height": 20,
       "angle": 0
     }
   ],
   "carStartPosition": {
-    "x": 500,
-    "y": 300,
+    "x": 550,
+    "y": 250,
     "angle": 0
   },
   "timeLimit": 120,
   "par": {
-    "time": 60,
-    "accuracy": 82,
+    "time": 65,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Pull up alongside the front car",
-    "Reverse at 45 degrees",
-    "Straighten when parallel"
+    "Classic parallel parking",
+    "Front and rear cars present",
+    "Watch the pillar"
   ]
 }

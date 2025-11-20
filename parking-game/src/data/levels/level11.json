@@ -1,54 +1,54 @@
 {
   "levelNumber": 11,
-  "title": "Precision Parallel",
+  "title": "Hill Parking",
   "difficulty": "advanced",
   "parkingSpot": {
-    "x": 350,
-    "y": 270,
+    "x": 380,
+    "y": 230,
     "width": 75,
-    "height": 115,
+    "height": 120,
     "angle": 0
   },
   "obstacles": [
     {
       "type": "car",
-      "x": 350,
-      "y": 190,
-      "width": 60,
-      "height": 100,
+      "x": 510,
+      "y": 230,
+      "width": 65,
+      "height": 105,
       "angle": 0
     },
     {
       "type": "car",
-      "x": 350,
-      "y": 350,
-      "width": 60,
-      "height": 100,
+      "x": 250,
+      "y": 230,
+      "width": 65,
+      "height": 105,
       "angle": 0
     },
     {
-      "type": "wall",
-      "x": 280,
-      "y": 270,
-      "width": 10,
-      "height": 300,
+      "type": "sidewalk",
+      "x": 380,
+      "y": 155,
+      "width": 450,
+      "height": 40,
       "angle": 0
     }
   ],
   "carStartPosition": {
-    "x": 550,
-    "y": 270,
+    "x": 600,
+    "y": 420,
     "angle": 0
   },
-  "timeLimit": 120,
+  "timeLimit": 110,
   "par": {
-    "time": 65,
-    "accuracy": 88,
+    "time": 60,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Minimal clearance!",
-    "Very precise movements",
-    "Use small adjustments"
+    "Mountain residence parking",
+    "Stricter angle requirements",
+    "Front and rear cars present"
   ]
 }

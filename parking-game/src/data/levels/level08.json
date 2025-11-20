@@ -1,46 +1,62 @@
 {
   "levelNumber": 8,
-  "title": "Time Trial Parking",
+  "title": "Narrow Alley Parking",
   "difficulty": "intermediate",
   "parkingSpot": {
-    "x": 500,
-    "y": 300,
-    "width": 75,
-    "height": 115,
+    "x": 360,
+    "y": 250,
+    "width": 70,
+    "height": 110,
     "angle": 0
   },
   "obstacles": [
     {
-      "type": "car",
-      "x": 440,
+      "type": "wall",
+      "x": 280,
       "y": 300,
+      "width": 15,
+      "height": 400,
+      "angle": 0
+    },
+    {
+      "type": "wall",
+      "x": 480,
+      "y": 300,
+      "width": 15,
+      "height": 400,
+      "angle": 0
+    },
+    {
+      "type": "car",
+      "x": 360,
+      "y": 350,
       "width": 60,
       "height": 100,
       "angle": 0
     },
     {
-      "type": "car",
-      "x": 560,
-      "y": 300,
-      "width": 60,
-      "height": 100,
+      "type": "barrier",
+      "x": 440,
+      "y": 180,
+      "width": 20,
+      "height": 20,
       "angle": 0
     }
   ],
   "carStartPosition": {
-    "x": 200,
-    "y": 300,
+    "x": 360,
+    "y": 520,
     "angle": 0
   },
-  "timeLimit": 45,
+  "timeLimit": 110,
   "par": {
-    "time": 30,
-    "accuracy": 78,
+    "time": 60,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Speed bonus for quick parking!",
-    "Don't rush - accuracy counts",
-    "One smooth motion"
+    "Very narrow space",
+    "Limited maneuvering room",
+    "Watch the trash can"
   ]
 }

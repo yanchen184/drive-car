@@ -1,46 +1,54 @@
 {
   "levelNumber": 5,
-  "title": "Reverse Bay Parking",
+  "title": "Street Parking - Rear Car",
   "difficulty": "beginner",
   "parkingSpot": {
     "x": 400,
     "y": 200,
-    "width": 80,
-    "height": 120,
-    "angle": 90
+    "width": 75,
+    "height": 115,
+    "angle": 0
   },
   "obstacles": [
     {
-      "type": "wall",
-      "x": 400,
-      "y": 100,
-      "width": 200,
-      "height": 10,
+      "type": "car",
+      "x": 270,
+      "y": 200,
+      "width": 65,
+      "height": 105,
       "angle": 0
     },
     {
-      "type": "car",
+      "type": "sidewalk",
+      "x": 400,
+      "y": 130,
+      "width": 600,
+      "height": 40,
+      "angle": 0
+    },
+    {
+      "type": "wall",
       "x": 530,
       "y": 200,
-      "width": 70,
-      "height": 110,
-      "angle": 90
+      "width": 15,
+      "height": 150,
+      "angle": 0
     }
   ],
   "carStartPosition": {
-    "x": 400,
-    "y": 500,
-    "angle": 0
+    "x": 600,
+    "y": 400,
+    "angle": 180
   },
-  "timeLimit": 90,
+  "timeLimit": 100,
   "par": {
-    "time": 45,
-    "accuracy": 85,
+    "time": 50,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Align with parking spot",
-    "Use your mirrors",
-    "Reverse slowly and steadily"
+    "Car parked behind",
+    "Reverse park in front of rear car",
+    "Watch the sidewalk"
   ]
 }

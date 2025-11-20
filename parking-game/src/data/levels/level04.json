@@ -1,37 +1,37 @@
 {
   "levelNumber": 4,
-  "title": "Tight Forward Parking",
+  "title": "Street Parking - Front Car",
   "difficulty": "beginner",
   "parkingSpot": {
     "x": 400,
-    "y": 280,
-    "width": 65,
-    "height": 105,
+    "y": 200,
+    "width": 75,
+    "height": 115,
     "angle": 0
   },
   "obstacles": [
     {
       "type": "car",
-      "x": 310,
-      "y": 280,
-      "width": 60,
-      "height": 100,
+      "x": 530,
+      "y": 200,
+      "width": 65,
+      "height": 105,
       "angle": 0
     },
     {
-      "type": "car",
-      "x": 490,
-      "y": 280,
-      "width": 60,
-      "height": 100,
+      "type": "sidewalk",
+      "x": 400,
+      "y": 130,
+      "width": 600,
+      "height": 40,
       "angle": 0
     },
     {
       "type": "wall",
-      "x": 400,
+      "x": 270,
       "y": 200,
-      "width": 300,
-      "height": 10,
+      "width": 15,
+      "height": 150,
       "angle": 0
     }
   ],
@@ -40,15 +40,15 @@
     "y": 400,
     "angle": 0
   },
-  "timeLimit": 90,
+  "timeLimit": 100,
   "par": {
-    "time": 40,
-    "accuracy": 85,
+    "time": 50,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Approach straight and slow",
-    "Center yourself between the cars",
-    "Watch your mirrors for clearance"
+    "Car parked in front",
+    "Position behind the front car",
+    "Don't hit the sidewalk"
   ]
 }

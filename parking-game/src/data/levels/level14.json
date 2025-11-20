@@ -1,62 +1,78 @@
 {
   "levelNumber": 14,
-  "title": "Tight Squeeze",
+  "title": "Mechanical Parking",
   "difficulty": "expert",
   "parkingSpot": {
-    "x": 400,
-    "y": 280,
-    "width": 68,
-    "height": 108,
+    "x": 380,
+    "y": 260,
+    "width": 72,
+    "height": 115,
     "angle": 0
   },
   "obstacles": [
     {
-      "type": "car",
-      "x": 340,
-      "y": 280,
-      "width": 60,
-      "height": 100,
-      "angle": 0
-    },
-    {
-      "type": "car",
-      "x": 460,
-      "y": 280,
-      "width": 60,
-      "height": 100,
-      "angle": 0
-    },
-    {
-      "type": "car",
-      "x": 400,
-      "y": 400,
-      "width": 60,
-      "height": 100,
+      "type": "wall",
+      "x": 310,
+      "y": 260,
+      "width": 15,
+      "height": 250,
       "angle": 0
     },
     {
       "type": "wall",
-      "x": 400,
-      "y": 210,
+      "x": 450,
+      "y": 260,
+      "width": 15,
+      "height": 250,
+      "angle": 0
+    },
+    {
+      "type": "wall",
+      "x": 380,
+      "y": 190,
       "width": 250,
-      "height": 10,
+      "height": 15,
+      "angle": 0
+    },
+    {
+      "type": "wall",
+      "x": 380,
+      "y": 330,
+      "width": 250,
+      "height": 15,
+      "angle": 0
+    },
+    {
+      "type": "pillar",
+      "x": 330,
+      "y": 220,
+      "width": 20,
+      "height": 20,
+      "angle": 0
+    },
+    {
+      "type": "barrier",
+      "x": 430,
+      "y": 300,
+      "width": 20,
+      "height": 20,
       "angle": 0
     }
   ],
   "carStartPosition": {
-    "x": 200,
-    "y": 500,
+    "x": 380,
+    "y": 480,
     "angle": 0
   },
-  "timeLimit": 90,
+  "timeLimit": 100,
   "par": {
     "time": 65,
-    "accuracy": 90,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Extremely tight space",
-    "Multiple point turn required",
-    "Expert-level precision"
+    "Extremely narrow space",
+    "Only 105% car length clearance",
+    "Mechanical parking system"
   ]
 }

@@ -19,14 +19,15 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.5.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c新功能: 精準度計算改進 + 修復下一關按鈕', 'color: #10B981; font-size: 14px');
-    console.log('✅ 改用車輛與停車格重疊面積計算精準度（Sutherland-Hodgman 算法）');
-    console.log('✅ 顯示車輛進入停車格的實際百分比');
-    console.log('✅ 修復按下一關後浮動按鈕不消失的問題');
-    console.log('✅ 新增速度和角度扣分機制（更真實的停車評分）');
-    console.log('物理模型: Ackermann 轉向');
-    console.log('控制方式: 方向鍵 + 滑桿調整速度');
+    console.log('%c🚗 停車挑戰 v3.6.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c主題關卡系統 - 完整重新設計所有15關', 'color: #10B981; font-size: 14px');
+    console.log('✅ 全新主題關卡系統 - 每關有明確的停車場景和學習目標');
+    console.log('✅ 新增 sidewalk（人行道）、curb（路緣）、barrier（障礙物）類型');
+    console.log('✅ 通關標準提升至 95% 重疊率');
+    console.log('✅ 碰撞後車輛完全停止（更真實）');
+    console.log('✅ 預設轉向速度優化：0.004（更靈敏）');
+    console.log('📚 關卡分級：初級(1-5) → 中級(6-10) → 高級(11-13) → 專家(14-15)');
+    console.log('物理模型: Ackermann 轉向 + Sutherland-Hodgman 精準度計算');
   }, []);
 
   const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game', 'simple'

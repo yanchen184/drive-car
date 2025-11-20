@@ -201,6 +201,63 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
           ctx.stroke();
           break;
 
+        case 'sidewalk':
+          // 繪製人行道（淺灰色帶斑馬紋）
+          ctx.fillStyle = '#94A3B8';
+          ctx.fillRect(-obstacle.width / 2, -obstacle.height / 2, obstacle.width, obstacle.height);
+
+          // 斑馬紋理
+          ctx.strokeStyle = '#CBD5E1';
+          ctx.lineWidth = 3;
+          const stripeSpacing = 30;
+          for (let i = -obstacle.width / 2; i < obstacle.width / 2; i += stripeSpacing) {
+            ctx.beginPath();
+            ctx.moveTo(i, -obstacle.height / 2);
+            ctx.lineTo(i, obstacle.height / 2);
+            ctx.stroke();
+          }
+
+          // 邊框
+          ctx.strokeStyle = '#64748B';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-obstacle.width / 2, -obstacle.height / 2, obstacle.width, obstacle.height);
+
+          // 文字標記
+          ctx.fillStyle = '#475569';
+          ctx.font = 'bold 14px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('SIDEWALK', 0, 0);
+          break;
+
+        case 'curb':
+          // 繪製路緣（細長的矩形）
+          ctx.fillStyle = '#64748B';
+          ctx.fillRect(-obstacle.width / 2, -obstacle.height / 2, obstacle.width, obstacle.height);
+          ctx.strokeStyle = '#475569';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-obstacle.width / 2, -obstacle.height / 2, obstacle.width, obstacle.height);
+          break;
+
+        case 'barrier':
+          // 繪製障礙物（垃圾桶、購物車等）
+          ctx.fillStyle = '#6B7280';
+          ctx.strokeStyle = '#374151';
+          ctx.lineWidth = 2;
+          ctx.fillRect(-obstacle.width / 2, -obstacle.height / 2, obstacle.width, obstacle.height);
+          ctx.strokeRect(-obstacle.width / 2, -obstacle.height / 2, obstacle.width, obstacle.height);
+
+          // X 標記
+          ctx.strokeStyle = '#EF4444';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(-obstacle.width / 3, -obstacle.height / 3);
+          ctx.lineTo(obstacle.width / 3, obstacle.height / 3);
+          ctx.moveTo(obstacle.width / 3, -obstacle.height / 3);
+          ctx.lineTo(-obstacle.width / 3, obstacle.height / 3);
+          ctx.stroke();
+          break;
+
         default:
           break;
       }

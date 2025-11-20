@@ -1,19 +1,19 @@
 {
   "levelNumber": 15,
-  "title": "Master Challenge",
+  "title": "Ultimate Parking Master",
   "difficulty": "expert",
   "parkingSpot": {
     "x": 350,
-    "y": 250,
-    "width": 72,
-    "height": 112,
+    "y": 240,
+    "width": 70,
+    "height": 115,
     "angle": 0
   },
   "obstacles": [
     {
       "type": "car",
       "x": 350,
-      "y": 165,
+      "y": 155,
       "width": 60,
       "height": 100,
       "angle": 0
@@ -21,58 +21,66 @@
     {
       "type": "car",
       "x": 350,
-      "y": 335,
+      "y": 325,
       "width": 60,
       "height": 100,
       "angle": 0
     },
     {
-      "type": "pillar",
-      "x": 450,
-      "y": 200,
-      "width": 25,
-      "height": 25,
+      "type": "sidewalk",
+      "x": 350,
+      "y": 95,
+      "width": 450,
+      "height": 40,
       "angle": 0
     },
     {
       "type": "pillar",
-      "x": 450,
-      "y": 300,
-      "width": 25,
-      "height": 25,
-      "angle": 0
-    },
-    {
-      "type": "wall",
       "x": 280,
-      "y": 250,
-      "width": 10,
-      "height": 300,
+      "y": 180,
+      "width": 22,
+      "height": 22,
+      "angle": 0
+    },
+    {
+      "type": "pillar",
+      "x": 280,
+      "y": 300,
+      "width": 22,
+      "height": 22,
       "angle": 0
     },
     {
       "type": "cone",
-      "x": 500,
-      "y": 250,
+      "x": 480,
+      "y": 240,
       "width": 15,
       "height": 15,
+      "angle": 0
+    },
+    {
+      "type": "barrier",
+      "x": 420,
+      "y": 380,
+      "width": 20,
+      "height": 20,
       "angle": 0
     }
   ],
   "carStartPosition": {
     "x": 580,
-    "y": 250,
+    "y": 240,
     "angle": 0
   },
-  "timeLimit": 120,
+  "timeLimit": 90,
   "par": {
-    "time": 75,
-    "accuracy": 92,
+    "time": 60,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Ultimate parking test!",
-    "Combine all skills",
-    "Perfect execution required"
+    "Ultimate parking test",
+    "All techniques required",
+    "Master-level precision"
   ]
 }

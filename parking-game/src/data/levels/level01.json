@@ -1,46 +1,38 @@
 {
   "levelNumber": 1,
-  "title": "直線後退停車 - Straight Reverse Parking",
+  "title": "Basic Reverse Parking",
   "difficulty": "beginner",
   "parkingSpot": {
-    "x": 600,
-    "y": 450,
-    "width": 90,
-    "height": 150,
+    "x": 400,
+    "y": 250,
+    "width": 75,
+    "height": 115,
     "angle": 0
   },
   "obstacles": [
     {
-      "type": "car",
-      "x": 450,
-      "y": 450,
-      "width": 90,
-      "height": 150,
-      "angle": 0
-    },
-    {
-      "type": "car",
-      "x": 750,
-      "y": 450,
-      "width": 90,
-      "height": 150,
+      "type": "wall",
+      "x": 400,
+      "y": 170,
+      "width": 200,
+      "height": 15,
       "angle": 0
     }
   ],
   "carStartPosition": {
-    "x": 600,
-    "y": 200,
+    "x": 400,
+    "y": 520,
     "angle": 0
   },
-  "timeLimit": 60,
+  "timeLimit": 120,
   "par": {
-    "time": 30,
-    "accuracy": 80,
+    "time": 60,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "🎯 第一關：直線後退停車",
-    "🚗 只需要直直往後退，停進兩台車中間的空格",
-    "⬇️ 按「下」鍵倒車，小心不要撞到旁邊的車！"
+    "Straight reverse parking",
+    "Align with the center",
+    "Reverse slowly and steadily"
   ]
 }

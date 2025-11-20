@@ -1,6 +1,6 @@
 {
   "levelNumber": 13,
-  "title": "Valet Challenge",
+  "title": "Valet Parking Challenge",
   "difficulty": "advanced",
   "parkingSpot": {
     "x": 320,
@@ -58,13 +58,13 @@
   },
   "timeLimit": 75,
   "par": {
-    "time": 55,
-    "accuracy": 82,
+    "time": 50,
+    "accuracy": 95,
     "collisions": 0
   },
   "hints": [
-    "Complex obstacle pattern",
-    "Plan your approach",
-    "Professional precision"
+    "Complex angled pattern",
+    "Professional precision required",
+    "Five-star hotel challenge"
   ]
 }
