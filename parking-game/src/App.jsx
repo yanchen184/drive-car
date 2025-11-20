@@ -11,6 +11,7 @@ import LevelComplete from './components/ui/LevelComplete';
 import LevelFailed from './components/ui/LevelFailed';
 import PauseMenu from './components/ui/PauseMenu';
 import Tutorial from './components/ui/Tutorial';
+import LevelEditor from './components/editor/LevelEditor';
 import { useGame } from './contexts/GameContext';
 import { calculateScore } from './utils/scoring/scoreCalculator';
 import { getStarRating } from './utils/scoring/starRating';
@@ -19,19 +20,19 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.7.2', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c碰撞系統完整修正 - 智能鎖定車頭/車尾', 'color: #10B981; font-size: 14px');
-    console.log('✅ 偵測碰撞部位（車頭/車尾）');
-    console.log('✅ 車頭撞牆 → 禁止前進，允許倒車');
-    console.log('✅ 車尾撞牆 → 禁止倒車，允許前進');
-    console.log('✅ 車輛離開障礙物後自動解除鎖定');
-    console.log('✅ 修正所有停車格尺寸 - 可達到 100% 精準度');
-    console.log('✅ 新增關卡驗證系統 - 自動檢測設計問題');
-    console.log('📐 停車格最小尺寸：垂直 70×130 / 水平 130×70');
+    console.log('%c🚗 停車挑戰 v3.8.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c🎨 超級大改版 - 完整關卡編輯器', 'color: #10B981; font-size: 14px');
+    console.log('✅ 可視化拖曳編輯關卡 (1-15)');
+    console.log('✅ 拖曳停車格、車輛起始位置、障礙物');
+    console.log('✅ 旋轉、調整尺寸、刪除功能');
+    console.log('✅ 自動防止物體重疊（碰撞推開）');
+    console.log('✅ 儲存到 localStorage');
+    console.log('✅ 7種障礙物類型（車、牆、柱、錐筒等）');
+    console.log('🎨 從「設定」進入關卡編輯器');
     console.log('🔧 物理: Ackermann 轉向 + Sutherland-Hodgman 多邊形裁剪');
   }, []);
 
-  const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game', 'simple'
+  const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game', 'simple', 'editor'
   const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
   const [levelData, setLevelData] = useState(null);
   const [steeringInput, setSteeringInput] = useState(0);
@@ -291,7 +292,7 @@ function App() {
       <MainMenu
         onStartGame={handleStartGame}
         onTutorial={handleTutorial}
-        onSettings={() => console.log('Settings')}
+        onSettings={() => setCurrentScreen('editor')}
         onLeaderboard={() => console.log('Leaderboard')}
       />
     );
@@ -299,6 +300,10 @@ function App() {
 
   if (currentScreen === 'simple') {
     return <SimpleCar />;
+  }
+
+  if (currentScreen === 'editor') {
+    return <LevelEditor onBack={() => setCurrentScreen('menu')} />;
   }
 
   if (currentScreen === 'levelSelect') {
