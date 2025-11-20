@@ -5,8 +5,8 @@
   "parkingSpot": {
     "x": 400,
     "y": 200,
-    "width": 75,
-    "height": 115,
+    "width": 80,
+    "height": 130,
     "angle": 0
   },
   "obstacles": [

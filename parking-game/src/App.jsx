@@ -19,15 +19,15 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.6.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c主題關卡系統 - 完整重新設計所有15關', 'color: #10B981; font-size: 14px');
-    console.log('✅ 全新主題關卡系統 - 每關有明確的停車場景和學習目標');
-    console.log('✅ 新增 sidewalk（人行道）、curb（路緣）、barrier（障礙物）類型');
-    console.log('✅ 通關標準提升至 95% 重疊率');
-    console.log('✅ 碰撞後車輛完全停止（更真實）');
-    console.log('✅ 預設轉向速度優化：0.004（更靈敏）');
-    console.log('📚 關卡分級：初級(1-5) → 中級(6-10) → 高級(11-13) → 專家(14-15)');
-    console.log('物理模型: Ackermann 轉向 + Sutherland-Hodgman 精準度計算');
+    console.log('%c🚗 停車挑戰 v3.7.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c碰撞系統優化 + 停車格尺寸修正', 'color: #10B981; font-size: 14px');
+    console.log('✅ 碰撞後車輛完全鎖定 - 無法再移動');
+    console.log('✅ 修正所有停車格尺寸 - 現在可達到 100% 精準度');
+    console.log('✅ 新增關卡驗證系統 - 自動檢測設計問題');
+    console.log('✅ 13 個關卡停車格尺寸調整');
+    console.log('📐 停車格最小尺寸：垂直 70×130 / 水平 130×70');
+    console.log('🔧 物理: Ackermann 轉向 + Sutherland-Hodgman 多邊形裁剪');
+    console.log('🐛 Debug 模式：90%+ 精準度時輸出詳細計算資訊');
   }, []);
 
   const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game', 'simple'

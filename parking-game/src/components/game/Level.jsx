@@ -39,6 +39,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   const collisionsRef = useRef(0);
   const [collisionFlash, setCollisionFlash] = useState(false);
   const lastCollisionTimeRef = useRef(0);
+  const collisionLockedRef = useRef(false); // 碰撞鎖定：碰撞後完全禁止移動
 
   // 車輛狀態
   const [carState, setCarState] = useState({
@@ -481,8 +482,21 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     // 車輛的總面積
     const carArea = CAR_WIDTH * CAR_LENGTH;
 
+    // 停車格面積
+    const spotArea = spot.width * spot.height;
+
     // 計算重疊百分比（車輛在停車格內的比例）
     const overlapPercentage = Math.min(100, (overlapArea / carArea) * 100);
+
+    // Debug: 輸出詳細資訊（僅在接近成功時）
+    if (overlapPercentage > 90) {
+      console.log(`[Parking Debug] Overlap: ${overlapPercentage.toFixed(2)}%`);
+      console.log(`  Car Area: ${carArea.toFixed(2)} (${CAR_WIDTH}×${CAR_LENGTH})`);
+      console.log(`  Spot Area: ${spotArea.toFixed(2)} (${spot.width}×${spot.height})`);
+      console.log(`  Overlap Area: ${overlapArea.toFixed(2)}`);
+      console.log(`  Angle Diff: ${angleDiff.toFixed(2)}°`);
+      console.log(`  Speed: ${Math.abs(car.speed).toFixed(3)}`);
+    }
 
     // 速度檢查：停車時速度不能太快
     const maxSpeed = 1.0;
@@ -617,6 +631,13 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   const updateCarPhysics = (car, controls) => {
     const newCar = { ...car };
 
+    // 如果碰撞鎖定，完全禁止移動
+    if (collisionLockedRef.current) {
+      newCar.speed = 0;
+      newCar.steeringAngle *= 0.9; // 方向盤慢慢回正
+      return newCar;
+    }
+
     // 更新方向盤角度
     if (controls.left) {
       newCar.steeringAngle = Math.max(
@@ -667,8 +688,9 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     const now = Date.now();
 
     if (hasCollision) {
-      // 碰撞時完全停止車輛
+      // 碰撞時完全停止車輛並鎖定
       newCar.speed = 0;
+      collisionLockedRef.current = true;
 
       // 只在500ms內計數一次碰撞（避免重複計數）
       if (now - lastCollisionTimeRef.current > 500) {
@@ -767,6 +789,61 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   }, []);
 
   /**
+   * 驗證關卡設計（開發模式檢查）
+   */
+  const validateLevelDesign = (level) => {
+    if (!level) return true;
+
+    const warnings = [];
+
+    // 檢查停車格尺寸（必須能容納車輛）
+    const spot = level.parkingSpot;
+    if (spot) {
+      // 考慮旋轉：0度或180度時，車輛長度對應spot高度
+      // 90度或270度時，車輛長度對應spot寬度
+      const spotAngleDeg = ((spot.angle || 0) * 180 / Math.PI) % 360;
+      const isVertical = Math.abs(spotAngleDeg) < 45 || Math.abs(spotAngleDeg - 180) < 45;
+
+      if (isVertical) {
+        if (spot.width < CAR_WIDTH || spot.height < CAR_LENGTH) {
+          warnings.push(`⚠️ Level ${level.levelNumber}: Parking spot (${spot.width}×${spot.height}) is too small for car (${CAR_WIDTH}×${CAR_LENGTH})`);
+        }
+      } else {
+        if (spot.width < CAR_LENGTH || spot.height < CAR_WIDTH) {
+          warnings.push(`⚠️ Level ${level.levelNumber}: Parking spot (${spot.width}×${spot.height}) is too small for rotated car (${CAR_LENGTH}×${CAR_WIDTH})`);
+        }
+      }
+    }
+
+    // 檢查障礙物是否與停車格重疊
+    if (level.obstacles && spot) {
+      const spotPoints = getRotatedRectPoints(spot.x, spot.y, spot.width, spot.height, spot.angle || 0);
+
+      level.obstacles.forEach((obstacle, index) => {
+        const obstaclePoints = getRotatedRectPoints(
+          obstacle.x,
+          obstacle.y,
+          obstacle.width,
+          obstacle.height,
+          obstacle.angle || 0
+        );
+
+        const overlapArea = calculateOverlapArea(spotPoints, obstaclePoints);
+        if (overlapArea > 1) {
+          warnings.push(`⚠️ Level ${level.levelNumber}: Obstacle #${index + 1} (${obstacle.type}) overlaps with parking spot (${overlapArea.toFixed(0)} px²)`);
+        }
+      });
+    }
+
+    if (warnings.length > 0) {
+      console.warn('🚨 Level Design Validation Issues:');
+      warnings.forEach(w => console.warn(w));
+    }
+
+    return warnings.length === 0;
+  };
+
+  /**
    * 初始化 Canvas
    */
   useEffect(() => {
@@ -776,8 +853,29 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     canvas.width = 1200;
     canvas.height = 900;
 
-    // 啟動計時
+    // 驗證關卡設計（開發模式）
+    validateLevelDesign(levelData);
+
+    // 重置遊戲狀態（重要：新關卡載入時清除完成狀態）
+    gameCompletedRef.current = false;
     gameStartTimeRef.current = Date.now();
+    collisionsRef.current = 0;
+    collisionLockedRef.current = false; // 解除碰撞鎖定
+    setCollisions(0);
+    setShowCompletionOverlay(false);
+
+    // 重置車輛位置
+    setCarState({
+      x: levelData?.carStartPosition?.x || 200,
+      y: levelData?.carStartPosition?.y || 500,
+      angle: levelData?.carStartPosition?.angle || 0,
+      steeringAngle: 0,
+      speed: 0,
+      maxSpeed: 0.5,
+      acceleration: 0.1,
+      friction: 0.95,
+      wheelBase: 80,
+    });
 
     // 啟動遊戲循環
     gameLoop();
@@ -834,6 +932,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     setGameTime(0);
     setCollisions(0);
     collisionsRef.current = 0;
+    collisionLockedRef.current = false; // 解除碰撞鎖定
     gameStartTimeRef.current = Date.now();
 
     // 重置完成狀態
