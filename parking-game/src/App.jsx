@@ -20,8 +20,13 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.8.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c🎨 超級大改版 - 完整關卡編輯器', 'color: #10B981; font-size: 14px');
+    console.log('%c🚗 停車挑戰 v3.8.1', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c🔧 關鍵修復 - 自定義關卡現在可以玩了！', 'color: #10B981; font-size: 14px');
+    console.log('✅ 修復：遊戲現在會載入 localStorage 中的自定義關卡');
+    console.log('✅ 優先級：自定義關卡 > 預設 JSON 關卡');
+    console.log('✅ Console 顯示關卡來源（自定義 or 預設）');
+    console.log('---');
+    console.log('🎨 關卡編輯器功能：');
     console.log('✅ 可視化拖曳編輯關卡 (1-15)');
     console.log('✅ 拖曳停車格、車輛起始位置、障礙物');
     console.log('✅ 旋轉、調整尺寸、刪除功能');
@@ -72,8 +77,21 @@ function App() {
   // Load level data dynamically
   const loadLevel = async (levelNumber) => {
     try {
-      const levelModule = await import(`./data/levels/level${levelNumber.toString().padStart(2, '0')}.json`);
-      const data = levelModule.default;
+      // 優先檢查 localStorage 是否有自定義關卡
+      const savedLevel = localStorage.getItem(`custom-level-${levelNumber}`);
+      let data;
+
+      if (savedLevel) {
+        // 使用自定義關卡
+        data = JSON.parse(savedLevel);
+        console.log(`✅ 載入自定義關卡 ${levelNumber}`);
+      } else {
+        // 載入預設 JSON 關卡
+        const levelModule = await import(`./data/levels/level${levelNumber.toString().padStart(2, '0')}.json`);
+        data = levelModule.default;
+        console.log(`📄 載入預設關卡 ${levelNumber}`);
+      }
+
       setLevelData(data);
       setCurrentLevelNumber(levelNumber);
       setLevel(levelNumber);
