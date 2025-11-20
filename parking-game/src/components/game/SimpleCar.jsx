@@ -355,8 +355,8 @@ const SimpleCar = () => {
         const turningRadius = newCar.wheelBase / Math.tan(Math.abs(newCar.steeringAngle));
         const angularVelocity = newCar.speed / turningRadius;
 
-        // 更新車身角度
-        newCar.angle += angularVelocity * Math.sign(newCar.steeringAngle) * Math.sign(newCar.speed);
+        // 更新車身角度（修正：倒車時不反轉方向，保持直覺的左右轉向）
+        newCar.angle += angularVelocity * Math.sign(newCar.steeringAngle);
       }
 
       // 沿著車身方向移動

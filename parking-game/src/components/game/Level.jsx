@@ -416,7 +416,8 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
       if (Math.abs(newCar.steeringAngle) > 0.001) {
         const turningRadius = newCar.wheelBase / Math.tan(Math.abs(newCar.steeringAngle));
         const angularVelocity = newCar.speed / turningRadius;
-        newCar.angle += angularVelocity * Math.sign(newCar.steeringAngle) * Math.sign(newCar.speed);
+        // 修正：倒車時不反轉方向，保持直覺的左右轉向
+        newCar.angle += angularVelocity * Math.sign(newCar.steeringAngle);
       }
 
       newCar.x += Math.sin(newCar.angle) * newCar.speed;
