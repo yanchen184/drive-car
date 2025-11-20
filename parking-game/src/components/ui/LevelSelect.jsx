@@ -11,7 +11,7 @@ const LevelSelect = ({ onSelectLevel, onBack, unlockedLevels = 5, levelScores = 
     name: `Level ${i + 1}`,
     difficulty: i < 3 ? 'Easy' : i < 7 ? 'Medium' : i < 11 ? 'Hard' : 'Expert',
     description: getLevelDescription(i + 1),
-    unlocked: i < unlockedLevels,
+    unlocked: true, // 解鎖所有關卡供測試
     stars: levelScores[i + 1] || 0,
   }));
 

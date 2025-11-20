@@ -554,8 +554,31 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
     window.location.href = '/';
   };
 
+  const handleRestart = () => {
+    // 重新載入關卡
+    window.location.reload();
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4 relative">
+      {/* 頂部控制按鈕 */}
+      <div className="absolute top-4 right-4 flex gap-3 z-10">
+        <button
+          onClick={handleRestart}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 flex items-center gap-2 shadow-lg"
+          data-testid="restart-button"
+        >
+          🔄 重新開始
+        </button>
+        <button
+          onClick={handleBackToMenu}
+          className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 flex items-center gap-2 shadow-lg"
+          data-testid="back-to-menu-button"
+        >
+          🏠 返回主選單
+        </button>
+      </div>
+
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-100 text-center">
           Level {levelData?.levelNumber || 0}: {levelData?.title || 'Unknown'}
