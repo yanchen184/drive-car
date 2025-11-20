@@ -2,6 +2,8 @@
 
 A modern, responsive web-based parking simulation game designed to teach proper parking techniques through progressively challenging levels. Built with React, Tailwind CSS, and GSAP animations.
 
+**Current Version: v3.5.0** - Improved accuracy calculation with polygon overlap algorithm
+
 ## 🎮 Game Overview
 
 **Parking Master** is an educational driving game that helps players learn and master various parking techniques through 15 carefully designed levels. From basic forward parking to complex parallel parking scenarios, players will develop real-world parking skills in a fun, interactive environment.

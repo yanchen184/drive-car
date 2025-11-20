@@ -19,13 +19,12 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.4.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c新功能: 修復碰撞檢測 + 碰撞音效 + 即時下一關按鈕 + 關卡重新設計', 'color: #10B981; font-size: 14px');
-    console.log('✅ 修復旋轉矩形碰撞檢測（SAT演算法）');
-    console.log('✅ 添加碰撞音效和視覺反饋（紅色閃爍）');
-    console.log('✅ 停車成功後立即顯示浮動按鈕');
-    console.log('✅ 調整所有關卡尺寸適配新車輛大小');
-    console.log('✅ 第一關重新設計為直線後退停車');
+    console.log('%c🚗 停車挑戰 v3.5.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c新功能: 精準度計算改進 + 修復下一關按鈕', 'color: #10B981; font-size: 14px');
+    console.log('✅ 改用車輛與停車格重疊面積計算精準度（Sutherland-Hodgman 算法）');
+    console.log('✅ 顯示車輛進入停車格的實際百分比');
+    console.log('✅ 修復按下一關後浮動按鈕不消失的問題');
+    console.log('✅ 新增速度和角度扣分機制（更真實的停車評分）');
     console.log('物理模型: Ackermann 轉向');
     console.log('控制方式: 方向鍵 + 滑桿調整速度');
   }, []);

@@ -328,7 +328,83 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   };
 
   /**
-   * 檢查是否成功停車（使用百分比計算）
+   * 計算兩個旋轉矩形的重疊面積（使用 Sutherland-Hodgman 多邊形裁剪算法）
+   */
+  const calculateOverlapArea = (points1, points2) => {
+    // Sutherland-Hodgman 算法：用一個多邊形裁剪另一個多邊形
+    let outputPolygon = [...points1];
+
+    for (let i = 0; i < points2.length; i++) {
+      const edge = {
+        p1: points2[i],
+        p2: points2[(i + 1) % points2.length],
+      };
+
+      const inputPolygon = outputPolygon;
+      outputPolygon = [];
+
+      if (inputPolygon.length === 0) break;
+
+      for (let j = 0; j < inputPolygon.length; j++) {
+        const currentVertex = inputPolygon[j];
+        const previousVertex = inputPolygon[(j - 1 + inputPolygon.length) % inputPolygon.length];
+
+        const currentInside = isPointInsideEdge(currentVertex, edge);
+        const previousInside = isPointInsideEdge(previousVertex, edge);
+
+        if (currentInside) {
+          if (!previousInside) {
+            // 進入邊界，添加交點
+            const intersection = getIntersection(previousVertex, currentVertex, edge.p1, edge.p2);
+            if (intersection) outputPolygon.push(intersection);
+          }
+          outputPolygon.push(currentVertex);
+        } else if (previousInside) {
+          // 離開邊界，添加交點
+          const intersection = getIntersection(previousVertex, currentVertex, edge.p1, edge.p2);
+          if (intersection) outputPolygon.push(intersection);
+        }
+      }
+    }
+
+    // 計算多邊形面積（使用 Shoelace 公式）
+    if (outputPolygon.length < 3) return 0;
+
+    let area = 0;
+    for (let i = 0; i < outputPolygon.length; i++) {
+      const j = (i + 1) % outputPolygon.length;
+      area += outputPolygon[i].x * outputPolygon[j].y;
+      area -= outputPolygon[j].x * outputPolygon[i].y;
+    }
+    return Math.abs(area) / 2;
+  };
+
+  /**
+   * 判斷點是否在邊的內側
+   */
+  const isPointInsideEdge = (point, edge) => {
+    const d = (edge.p2.x - edge.p1.x) * (point.y - edge.p1.y) -
+              (edge.p2.y - edge.p1.y) * (point.x - edge.p1.x);
+    return d >= 0;
+  };
+
+  /**
+   * 計算兩條線段的交點
+   */
+  const getIntersection = (p1, p2, p3, p4) => {
+    const denom = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);
+    if (Math.abs(denom) < 1e-10) return null;
+
+    const ua = ((p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x)) / denom;
+
+    return {
+      x: p1.x + ua * (p2.x - p1.x),
+      y: p1.y + ua * (p2.y - p1.y),
+    };
+  };
+
+  /**
+   * 檢查是否成功停車（使用車輛與停車格的重疊面積比例）
    */
   const checkParking = (car, spot) => {
     if (!spot) return { success: false, distance: 999, angleDiff: 999, speed: 999, percentage: 0 };
@@ -338,31 +414,43 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     const distance = Math.sqrt(dx * dx + dy * dy);
     const angleDiff = Math.abs(car.angle - (spot.angle || 0)) * 180 / Math.PI;
 
-    // 計算停車百分比
-    // 位置得分：距離越近得分越高（最遠允許 50px）
-    const maxDistance = 50;
-    const positionScore = Math.max(0, 100 - (distance / maxDistance) * 100);
+    // 獲取車輛和停車格的旋轉矩形頂點
+    const carPoints = getRotatedRectPoints(car.x, car.y, CAR_WIDTH, CAR_LENGTH, car.angle);
+    const spotPoints = getRotatedRectPoints(spot.x, spot.y, spot.width, spot.height, spot.angle || 0);
 
-    // 角度得分：角度差越小得分越高（最大允許 30 度）
-    const maxAngleDiff = 30;
-    const angleScore = Math.max(0, 100 - (angleDiff / maxAngleDiff) * 100);
+    // 計算重疊面積
+    const overlapArea = calculateOverlapArea(carPoints, spotPoints);
 
-    // 速度得分：速度越慢得分越高（最快允許 1.0）
+    // 車輛的總面積
+    const carArea = CAR_WIDTH * CAR_LENGTH;
+
+    // 計算重疊百分比（車輛在停車格內的比例）
+    const overlapPercentage = Math.min(100, (overlapArea / carArea) * 100);
+
+    // 速度檢查：停車時速度不能太快
     const maxSpeed = 1.0;
-    const speedScore = Math.max(0, 100 - (Math.abs(car.speed) / maxSpeed) * 100);
+    const speedPenalty = Math.abs(car.speed) > maxSpeed ? 20 : 0;
 
-    // 綜合得分（各佔 1/3）
-    const percentage = Math.round((positionScore + angleScore + speedScore) / 3);
+    // 角度檢查：角度差異太大會扣分
+    const maxAngleDiff = 15; // 最多允許 15 度偏差
+    const anglePenalty = angleDiff > maxAngleDiff ? Math.min(20, (angleDiff - maxAngleDiff) * 2) : 0;
 
-    // 停車成功條件：總分超過 80%
-    const isSuccess = percentage >= 80;
+    // 最終精準度 = 重疊百分比 - 速度扣分 - 角度扣分
+    const finalPercentage = Math.max(0, Math.round(overlapPercentage - speedPenalty - anglePenalty));
+
+    // 停車成功條件：
+    // 1. 重疊比例至少 80%
+    // 2. 速度夠慢（< maxSpeed）
+    // 3. 角度差異小於 20 度
+    const isSuccess = overlapPercentage >= 80 && Math.abs(car.speed) < maxSpeed && angleDiff < 20;
 
     return {
       success: isSuccess,
       distance,
       angleDiff,
       speed: Math.abs(car.speed),
-      percentage: Math.max(0, Math.min(100, percentage)), // 限制在 0-100
+      percentage: finalPercentage,
+      overlapPercentage: Math.round(overlapPercentage), // 純重疊百分比（無扣分）
     };
   };
 
@@ -417,6 +505,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     // 顯示停車百分比
     ctx.font = 'bold 18px monospace';
     const percentage = parkingStatus.percentage || 0;
+    const overlapPercentage = parkingStatus.overlapPercentage || 0;
 
     // 根據百分比顯示不同顏色
     if (percentage >= 80) {
@@ -432,8 +521,9 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     // 顯示詳細資訊
     ctx.font = '14px monospace';
     ctx.fillStyle = '#9CA3AF';
-    ctx.fillText(`Distance: ${parkingStatus.distance.toFixed(1)}px`, 10, 135);
-    ctx.fillText(`Angle: ${parkingStatus.angleDiff.toFixed(1)}°`, 10, 155);
+    ctx.fillText(`車輛進入停車格: ${overlapPercentage}%`, 10, 135);
+    ctx.fillText(`角度偏差: ${parkingStatus.angleDiff.toFixed(1)}°`, 10, 155);
+    ctx.fillText(`當前速度: ${parkingStatus.speed.toFixed(2)}`, 10, 175);
 
     if (parkingStatus.success) {
       ctx.font = 'bold 20px monospace';
@@ -644,6 +734,10 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   const handleNextLevel = () => {
     // 關閉覆蓋層並導航到下一關
     setShowCompletionOverlay(false);
+
+    // 重置遊戲完成狀態（關鍵：讓浮動按鈕消失）
+    gameCompletedRef.current = false;
+
     if (onNextLevel) {
       onNextLevel();
     } else {
