@@ -15,23 +15,25 @@ import LevelEditor from './components/editor/LevelEditor';
 import { useGame } from './contexts/GameContext';
 import { calculateScore } from './utils/scoring/scoreCalculator';
 import { getStarRating } from './utils/scoring/starRating';
+import { loadCustomLevel } from './services/levelService';
 import './index.css';
 
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.8.1', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c🔧 關鍵修復 - 自定義關卡現在可以玩了！', 'color: #10B981; font-size: 14px');
-    console.log('✅ 修復：遊戲現在會載入 localStorage 中的自定義關卡');
-    console.log('✅ 優先級：自定義關卡 > 預設 JSON 關卡');
-    console.log('✅ Console 顯示關卡來源（自定義 or 預設）');
+    console.log('%c🚗 停車挑戰 v3.9.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c☁️ 雲端升級 - Firebase 整合完成！', 'color: #10B981; font-size: 14px');
+    console.log('✅ Firebase Firestore 雲端儲存自定義關卡');
+    console.log('✅ 跨裝置同步，永久保存');
+    console.log('✅ 自動備援：Firebase → localStorage');
+    console.log('✅ Console 顯示儲存來源（☁️ Firebase / 💾 localStorage）');
     console.log('---');
     console.log('🎨 關卡編輯器功能：');
     console.log('✅ 可視化拖曳編輯關卡 (1-15)');
     console.log('✅ 拖曳停車格、車輛起始位置、障礙物');
     console.log('✅ 旋轉、調整尺寸、刪除功能');
     console.log('✅ 自動防止物體重疊（碰撞推開）');
-    console.log('✅ 儲存到 localStorage');
+    console.log('✅ 儲存到 Firebase Firestore + localStorage 備份');
     console.log('✅ 7種障礙物類型（車、牆、柱、錐筒等）');
     console.log('🎨 從「設定」進入關卡編輯器');
     console.log('🔧 物理: Ackermann 轉向 + Sutherland-Hodgman 多邊形裁剪');
@@ -77,14 +79,15 @@ function App() {
   // Load level data dynamically
   const loadLevel = async (levelNumber) => {
     try {
-      // 優先檢查 localStorage 是否有自定義關卡
-      const savedLevel = localStorage.getItem(`custom-level-${levelNumber}`);
+      // 使用 Firebase 服務載入自定義關卡
+      const result = await loadCustomLevel(levelNumber);
       let data;
 
-      if (savedLevel) {
+      if (result.data) {
         // 使用自定義關卡
-        data = JSON.parse(savedLevel);
-        console.log(`✅ 載入自定義關卡 ${levelNumber}`);
+        data = result.data;
+        const sourceEmoji = result.source === 'firebase' ? '☁️' : '💾';
+        console.log(`✅ 載入自定義關卡 ${levelNumber} ${sourceEmoji} (來源: ${result.source})`);
       } else {
         // 載入預設 JSON 關卡
         const levelModule = await import(`./data/levels/level${levelNumber.toString().padStart(2, '0')}.json`);

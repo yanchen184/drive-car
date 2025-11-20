@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { saveCustomLevel, loadCustomLevel } from '../../services/levelService';
 
 /**
  * 關卡編輯器 - 可視化拖曳設計關卡
@@ -9,7 +10,7 @@ import PropTypes from 'prop-types';
  * - 拖曳設定車輛起始位置
  * - 拖曳新增/移動障礙物
  * - 自動防止重疊（碰撞推開）
- * - 儲存到 localStorage
+ * - 儲存到 Firebase Firestore（備用：localStorage）
  */
 const LevelEditor = ({ onBack }) => {
   const canvasRef = useRef(null);
@@ -48,15 +49,18 @@ const LevelEditor = ({ onBack }) => {
 
   const loadLevel = async (levelNumber) => {
     try {
-      // 先嘗試從 localStorage 載入自定義關卡
-      const savedLevel = localStorage.getItem(`custom-level-${levelNumber}`);
-      if (savedLevel) {
-        setLevelData(JSON.parse(savedLevel));
+      // 使用 Firebase 服務載入自定義關卡
+      const result = await loadCustomLevel(levelNumber);
+
+      if (result.data) {
+        console.log(`📝 編輯器載入關卡 ${levelNumber} (來源: ${result.source})`);
+        setLevelData(result.data);
         return;
       }
 
-      // 否則載入預設關卡
+      // 沒有自定義關卡，載入預設關卡
       const levelModule = await import(`../../data/levels/level${levelNumber.toString().padStart(2, '0')}.json`);
+      console.log(`📄 編輯器載入預設關卡 ${levelNumber}`);
       setLevelData(levelModule.default);
     } catch (error) {
       console.error(`Failed to load level ${levelNumber}:`, error);
@@ -92,7 +96,7 @@ const LevelEditor = ({ onBack }) => {
   /**
    * 儲存關卡
    */
-  const saveLevel = () => {
+  const saveLevel = async () => {
     if (!levelData) return;
 
     // 驗證關卡
@@ -102,9 +106,18 @@ const LevelEditor = ({ onBack }) => {
       return;
     }
 
-    // 儲存到 localStorage
-    localStorage.setItem(`custom-level-${currentLevel}`, JSON.stringify(levelData));
-    alert(`✅ 關卡 ${currentLevel} 已儲存！`);
+    // 使用 Firebase 服務儲存關卡
+    const result = await saveCustomLevel(currentLevel, levelData);
+
+    if (result.success) {
+      const storageType = result.storage === 'firebase' ? 'Firebase ☁️' : 'localStorage 💾';
+      alert(`✅ 關卡 ${currentLevel} 已儲存至 ${storageType}`);
+      if (result.warning) {
+        console.warn('⚠️ Firebase 警告:', result.warning);
+      }
+    } else {
+      alert(`❌ 儲存失敗：${result.error}`);
+    }
   };
 
   /**
