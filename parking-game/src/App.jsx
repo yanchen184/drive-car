@@ -19,15 +19,15 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.7.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c碰撞系統優化 + 停車格尺寸修正', 'color: #10B981; font-size: 14px');
-    console.log('✅ 碰撞後車輛完全鎖定 - 無法再移動');
-    console.log('✅ 修正所有停車格尺寸 - 現在可達到 100% 精準度');
+    console.log('%c🚗 停車挑戰 v3.7.1', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c碰撞系統智能鎖定 - 可後退脫困', 'color: #10B981; font-size: 14px');
+    console.log('✅ 碰撞後禁止朝障礙物方向移動');
+    console.log('✅ 允許反方向後退脫離障礙物');
+    console.log('✅ 車輛離開障礙物後自動解除鎖定');
+    console.log('✅ 修正所有停車格尺寸 - 可達到 100% 精準度');
     console.log('✅ 新增關卡驗證系統 - 自動檢測設計問題');
-    console.log('✅ 13 個關卡停車格尺寸調整');
     console.log('📐 停車格最小尺寸：垂直 70×130 / 水平 130×70');
     console.log('🔧 物理: Ackermann 轉向 + Sutherland-Hodgman 多邊形裁剪');
-    console.log('🐛 Debug 模式：90%+ 精準度時輸出詳細計算資訊');
   }, []);
 
   const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game', 'simple'

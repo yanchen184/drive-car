@@ -39,7 +39,8 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   const collisionsRef = useRef(0);
   const [collisionFlash, setCollisionFlash] = useState(false);
   const lastCollisionTimeRef = useRef(0);
-  const collisionLockedRef = useRef(false); // 碰撞鎖定：碰撞後完全禁止移動
+  const collisionLockedRef = useRef(false); // 碰撞鎖定：阻止朝障礙物方向移動
+  const collisionDirectionRef = useRef(1); // 碰撞時的移動方向 (1=前進, -1=倒車)
 
   // 車輛狀態
   const [carState, setCarState] = useState({
@@ -631,11 +632,29 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   const updateCarPhysics = (car, controls) => {
     const newCar = { ...car };
 
-    // 如果碰撞鎖定，完全禁止移動
+    // 碰撞鎖定：只阻止朝碰撞方向移動，允許反向後退
     if (collisionLockedRef.current) {
-      newCar.speed = 0;
-      newCar.steeringAngle *= 0.9; // 方向盤慢慢回正
-      return newCar;
+      const collisionDir = collisionDirectionRef.current;
+
+      // 如果嘗試朝碰撞方向移動，阻止加速
+      if (controls.forward && collisionDir > 0) {
+        // 碰撞時是前進，禁止繼續前進加速
+        newCar.speed = Math.min(0, newCar.speed);
+      } else if (controls.backward && collisionDir < 0) {
+        // 碰撞時是倒車，禁止繼續倒車加速
+        newCar.speed = Math.max(0, newCar.speed);
+      }
+
+      // 允許反方向移動（離開障礙物）
+      // 自然衰減
+      if (!controls.forward && !controls.backward) {
+        newCar.speed *= newCar.friction;
+        if (Math.abs(newCar.speed) < 0.01) {
+          newCar.speed = 0;
+          // 當完全停止時，解除碰撞鎖定
+          collisionLockedRef.current = false;
+        }
+      }
     }
 
     // 更新方向盤角度
@@ -688,7 +707,10 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     const now = Date.now();
 
     if (hasCollision) {
-      // 碰撞時完全停止車輛並鎖定
+      // 記錄碰撞時的移動方向
+      collisionDirectionRef.current = newCar.speed >= 0 ? 1 : -1;
+
+      // 碰撞時停止車輛並鎖定該方向
       newCar.speed = 0;
       collisionLockedRef.current = true;
 
@@ -705,6 +727,11 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
         const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
         audio.volume = 0.3;
         audio.play().catch(err => console.log('Audio play failed:', err));
+      }
+    } else {
+      // 沒有碰撞時，解除鎖定（車輛已離開障礙物）
+      if (collisionLockedRef.current && Math.abs(newCar.speed) > 0.1) {
+        collisionLockedRef.current = false;
       }
     }
 
