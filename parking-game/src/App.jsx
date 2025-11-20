@@ -19,11 +19,13 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.2.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c簡單車輛控制系統 + 停車格挑戰 + 可調整速度控制', 'color: #10B981; font-size: 14px');
+    console.log('%c🚗 停車挑戰 v3.3.0', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c新功能: 停車百分比顯示 + 更大車輛和場地 + 完成後按鈕', 'color: #10B981; font-size: 14px');
+    console.log('✨ 停車精準度百分比系統（超過 80% 算成功）');
+    console.log('✨ 車輛尺寸增加 50%，場地尺寸增加 50%');
+    console.log('✨ 完成關卡後顯示「下一關」和「返回主選單」按鈕');
     console.log('物理模型: Ackermann 轉向');
     console.log('控制方式: 方向鍵 + 滑桿調整速度');
-    console.log('挑戰目標: 準確停入黃色停車格');
   }, []);
 
   const [currentScreen, setCurrentScreen] = useState('menu'); // 'menu', 'levelSelect', 'game', 'simple'

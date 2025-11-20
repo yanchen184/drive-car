@@ -33,6 +33,8 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
   // 遊戲狀態
   const [gameTime, setGameTime] = useState(0);
   const [collisions, setCollisions] = useState(0);
+  const [showCompletionOverlay, setShowCompletionOverlay] = useState(false);
+  const [completionStats, setCompletionStats] = useState({});
   const gameStartTimeRef = useRef(null);
   const collisionsRef = useRef(0);
 
@@ -49,11 +51,11 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
     wheelBase: 80,
   });
 
-  // 車輛尺寸常數
-  const CAR_WIDTH = 40;
-  const CAR_LENGTH = 80;
-  const WHEEL_WIDTH = 8;
-  const WHEEL_LENGTH = 16;
+  // 車輛尺寸常數（增加 50%）
+  const CAR_WIDTH = 60;
+  const CAR_LENGTH = 120;
+  const WHEEL_WIDTH = 12;
+  const WHEEL_LENGTH = 24;
   const MAX_STEERING_ANGLE = Math.PI / 4;
 
   /**
@@ -241,25 +243,41 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
   };
 
   /**
-   * 檢查是否成功停車
+   * 檢查是否成功停車（使用百分比計算）
    */
   const checkParking = (car, spot) => {
-    if (!spot) return { success: false, distance: 999, angleDiff: 999, speed: 999 };
+    if (!spot) return { success: false, distance: 999, angleDiff: 999, speed: 999, percentage: 0 };
 
     const dx = car.x - spot.x;
     const dy = car.y - spot.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     const angleDiff = Math.abs(car.angle - (spot.angle || 0)) * 180 / Math.PI;
 
-    const isInPosition = distance < 20;
-    const isAligned = angleDiff < 5;
-    const isStopped = Math.abs(car.speed) < 0.1;
+    // 計算停車百分比
+    // 位置得分：距離越近得分越高（最遠允許 50px）
+    const maxDistance = 50;
+    const positionScore = Math.max(0, 100 - (distance / maxDistance) * 100);
+
+    // 角度得分：角度差越小得分越高（最大允許 30 度）
+    const maxAngleDiff = 30;
+    const angleScore = Math.max(0, 100 - (angleDiff / maxAngleDiff) * 100);
+
+    // 速度得分：速度越慢得分越高（最快允許 1.0）
+    const maxSpeed = 1.0;
+    const speedScore = Math.max(0, 100 - (Math.abs(car.speed) / maxSpeed) * 100);
+
+    // 綜合得分（各佔 1/3）
+    const percentage = Math.round((positionScore + angleScore + speedScore) / 3);
+
+    // 停車成功條件：總分超過 80%
+    const isSuccess = percentage >= 80;
 
     return {
-      success: isInPosition && isAligned && isStopped,
+      success: isSuccess,
       distance,
       angleDiff,
       speed: Math.abs(car.speed),
+      percentage: Math.max(0, Math.min(100, percentage)), // 限制在 0-100
     };
   };
 
@@ -311,26 +329,52 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
     ctx.fillText(`Collisions: ${collisionsRef.current}`, 10, 60);
     ctx.fillText(`Speed: ${car.speed.toFixed(2)}`, 10, 80);
 
-    // 顯示停車狀態
-    ctx.font = 'bold 16px monospace';
-    if (parkingStatus.success) {
-      ctx.fillStyle = '#10B981';
-      ctx.fillText('✓ Parked!', 10, 110);
+    // 顯示停車百分比
+    ctx.font = 'bold 18px monospace';
+    const percentage = parkingStatus.percentage || 0;
 
-      // 觸發完成事件
-      if (onLevelComplete && !gameCompletedRef.current) {
+    // 根據百分比顯示不同顏色
+    if (percentage >= 80) {
+      ctx.fillStyle = '#10B981'; // 綠色 - 成功
+    } else if (percentage >= 60) {
+      ctx.fillStyle = '#F59E0B'; // 黃色 - 接近
+    } else {
+      ctx.fillStyle = '#EF4444'; // 紅色 - 需努力
+    }
+
+    ctx.fillText(`🎯 停車精準度: ${percentage}%`, 10, 110);
+
+    // 顯示詳細資訊
+    ctx.font = '14px monospace';
+    ctx.fillStyle = '#9CA3AF';
+    ctx.fillText(`Distance: ${parkingStatus.distance.toFixed(1)}px`, 10, 135);
+    ctx.fillText(`Angle: ${parkingStatus.angleDiff.toFixed(1)}°`, 10, 155);
+
+    if (parkingStatus.success) {
+      ctx.font = 'bold 20px monospace';
+      ctx.fillStyle = '#10B981';
+      ctx.fillText('✓ 停車成功！(≥80%)', 10, 185);
+
+      // 顯示完成覆蓋層
+      if (!gameCompletedRef.current) {
         gameCompletedRef.current = true;
         const elapsed = (Date.now() - gameStartTimeRef.current) / 1000;
-        onLevelComplete({
+        setCompletionStats({
           timeTaken: elapsed,
-          accuracy: 100 - (parkingStatus.distance + parkingStatus.angleDiff),
+          accuracy: percentage,
           collisions: collisionsRef.current,
         });
+        setShowCompletionOverlay(true);
+
+        // 觸發完成事件（可選）
+        if (onLevelComplete) {
+          onLevelComplete({
+            timeTaken: elapsed,
+            accuracy: percentage,
+            collisions: collisionsRef.current,
+          });
+        }
       }
-    } else {
-      ctx.fillStyle = '#9CA3AF';
-      ctx.fillText(`Distance: ${parkingStatus.distance.toFixed(1)}px`, 10, 110);
-      ctx.fillText(`Angle: ${parkingStatus.angleDiff.toFixed(1)}°`, 10, 130);
     }
   };
 
@@ -480,8 +524,8 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = 1200;
+    canvas.height = 900;
 
     // 啟動計時
     gameStartTimeRef.current = Date.now();
@@ -497,8 +541,21 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelData]);
 
+  const handleNextLevel = () => {
+    // 關閉覆蓋層並觸發下一關
+    setShowCompletionOverlay(false);
+    if (onLevelComplete) {
+      onLevelComplete(completionStats);
+    }
+  };
+
+  const handleBackToMenu = () => {
+    // 返回主選單
+    window.location.href = '/';
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4 relative">
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-100 text-center">
           Level {levelData?.levelNumber || 0}: {levelData?.title || 'Unknown'}
@@ -559,6 +616,62 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
         className="border-4 border-gray-700 rounded-lg shadow-2xl"
         data-testid="level-canvas"
       />
+
+      {/* 完成覆蓋層 */}
+      {showCompletionOverlay && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 border-4 border-green-500 shadow-2xl">
+            {/* 標題 */}
+            <div className="text-center mb-6">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-4xl font-bold text-green-400 mb-2">關卡完成！</h2>
+              <p className="text-gray-300 text-lg">
+                Level {levelData?.levelNumber || 0}: {levelData?.title || 'Unknown'}
+              </p>
+            </div>
+
+            {/* 統計資訊 */}
+            <div className="bg-gray-900 rounded-lg p-4 mb-6 space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">停車精準度:</span>
+                <span className="text-green-400 font-bold text-xl">
+                  {completionStats.accuracy}%
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">完成時間:</span>
+                <span className="text-blue-400 font-mono">
+                  {completionStats.timeTaken?.toFixed(1)}s
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">碰撞次數:</span>
+                <span className="text-yellow-400 font-mono">
+                  {completionStats.collisions}
+                </span>
+              </div>
+            </div>
+
+            {/* 按鈕 */}
+            <div className="space-y-3">
+              <button
+                onClick={handleNextLevel}
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+                data-testid="next-level-button"
+              >
+                ➡️ 下一關
+              </button>
+              <button
+                onClick={handleBackToMenu}
+                className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200"
+                data-testid="back-to-menu-button"
+              >
+                🏠 返回主選單
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

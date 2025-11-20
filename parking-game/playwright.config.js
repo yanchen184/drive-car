@@ -28,7 +28,7 @@ export default defineConfig({
 
   // 共享設置
   use: {
-    // 基礎 URL
+    // 基礎 URL - 本地開發不含 base path
     baseURL: 'http://localhost:5173',
 
     // 截圖設置
@@ -68,7 +68,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:5173',
-    reuseExistingServer: true, // 使用已存在的伺服器
+    reuseExistingServer: !process.env.CI, // CI 環境不重用
     timeout: 120 * 1000,
   },
 });

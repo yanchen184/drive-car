@@ -1,0 +1,102 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - img "DTM Logo" [ref=e6]
+    - navigation [ref=e7]:
+      - button "DTM" [ref=e9]: DTM
+      - button "關於我們" [ref=e11]: 關於我們
+      - button "東京車展" [ref=e13]: 東京車展
+      - button "Auto Salon" [ref=e15]: Auto Salon
+      - button "改裝服務" [ref=e17]: 改裝服務
+      - button "活動剪影" [ref=e19]: 活動剪影
+      - button "聯繫我們" [ref=e21]: 聯繫我們
+    - generic [ref=e22]:
+      - button "TW" [ref=e23]
+      - text: "|"
+      - button "JP" [ref=e24]
+      - text: "|"
+      - button "EN" [ref=e25]
+  - generic [ref=e26]:
+    - link "bobchen184@gmail.com" [ref=e27] [cursor=pointer]:
+      - /url: mailto:bobchen184@gmail.com
+      - img [ref=e29]
+      - generic [ref=e33]: bobchen184@gmail.com
+    - link "+886-XXX-XXXX" [ref=e34] [cursor=pointer]:
+      - /url: tel:+886xxxxxxxxx
+      - img [ref=e36]
+      - generic [ref=e40]: +886-XXX-XXXX
+  - generic [ref=e41]:
+    - generic [ref=e42]:
+      - generic [ref=e46]:
+        - heading "DTM RACING" [level=1] [ref=e47]
+        - paragraph [ref=e48]: 專業賽車改裝 | 性能提升專家
+      - img [ref=e50]
+    - generic [ref=e53]:
+      - generic [ref=e54]:
+        - img "DTM Racing Team" [ref=e55]
+        - generic [ref=e56]:
+          - heading "專業團隊" [level=3] [ref=e57]
+          - paragraph [ref=e58]: 10年以上賽車改裝經驗
+      - generic [ref=e59]:
+        - img "Performance Upgrade" [ref=e60]
+        - generic [ref=e61]:
+          - heading "頂級改裝" [level=3] [ref=e62]
+          - paragraph [ref=e63]: 賽道級性能提升
+    - generic [ref=e67]:
+      - heading "東京車展 2024" [level=2] [ref=e68]
+      - paragraph [ref=e69]: 參與亞洲最大規模的汽車展覽
+    - generic [ref=e71]:
+      - img "Feature 1" [ref=e73]
+      - img "Gallery 1" [ref=e75]
+      - img "Gallery 2" [ref=e77]
+      - img "Gallery 3" [ref=e79]
+      - img "Gallery 4" [ref=e81]
+      - img "Gallery 5" [ref=e83]
+      - img "Gallery 6" [ref=e85]
+      - img "Feature 2" [ref=e87]
+      - img "Gallery Extra 1" [ref=e89]
+      - img "Gallery Extra 2" [ref=e91]
+      - img "Gallery Extra 3" [ref=e93]
+      - img "Gallery Extra 4" [ref=e95]
+      - img "Gallery Extra 5" [ref=e97]
+    - generic [ref=e101]:
+      - heading "Auto Salon 2025" [level=2] [ref=e102]
+      - paragraph [ref=e103]: 展出頂級改裝作品與創新技術
+    - generic [ref=e105]:
+      - heading "專業改裝服務" [level=2] [ref=e106]
+      - generic [ref=e107]:
+        - generic [ref=e109]:
+          - img "引擎調校" [ref=e110]
+          - generic [ref=e111]:
+            - heading "引擎調校" [level=3] [ref=e112]
+            - paragraph [ref=e113]: 馬力提升 / ECU優化
+        - generic [ref=e115]:
+          - img "空力套件" [ref=e116]
+          - generic [ref=e117]:
+            - heading "空力套件" [level=3] [ref=e118]
+            - paragraph [ref=e119]: 賽道級空氣動力學
+        - generic [ref=e121]:
+          - img "底盤強化" [ref=e122]
+          - generic [ref=e123]:
+            - heading "底盤強化" [level=3] [ref=e124]
+            - paragraph [ref=e125]: 懸吊系統優化
+        - generic [ref=e127]:
+          - img "內裝改裝" [ref=e128]
+          - generic [ref=e129]:
+            - heading "內裝改裝" [level=3] [ref=e130]
+            - paragraph [ref=e131]: 賽車化內裝設計
+        - generic [ref=e133]:
+          - img "排氣系統" [ref=e134]
+          - generic [ref=e135]:
+            - heading "排氣系統" [level=3] [ref=e136]
+            - paragraph [ref=e137]: 高性能排氣改裝
+    - generic [ref=e139]:
+      - heading "START YOUR JOURNEY" [level=2] [ref=e140]
+      - paragraph [ref=e141]: 讓 DTM 為您打造夢想中的賽車
+      - link "bobchen184@gmail.com" [ref=e143] [cursor=pointer]:
+        - /url: mailto:bobchen184@gmail.com
+        - img [ref=e144]
+        - text: bobchen184@gmail.com
+```

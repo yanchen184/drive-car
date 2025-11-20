@@ -4,8 +4,8 @@ test.describe('簡單車輛控制系統測試', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // 點擊 START GAME 按鈕進入車輛控制頁面
-    await page.getByRole('button', { name: /START GAME/i }).click();
+    // 點擊 TUTORIAL 按鈕進入教學關卡（SimpleCar）
+    await page.getByRole('button', { name: /TUTORIAL/i }).click();
     // 等待 canvas 載入
     await page.waitForSelector('[data-testid="car-canvas"]', { timeout: 5000 });
   });
@@ -213,7 +213,7 @@ test.describe('簡單車輛控制系統測試', () => {
   test('響應式測試 - 手機版', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
-    await page.getByRole('button', { name: /START GAME/i }).click();
+    await page.getByRole('button', { name: /TUTORIAL/i }).click();
 
     await page.waitForTimeout(1000);
 
@@ -225,7 +225,7 @@ test.describe('簡單車輛控制系統測試', () => {
   test('響應式測試 - 平板版', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.goto('/');
-    await page.getByRole('button', { name: /START GAME/i }).click();
+    await page.getByRole('button', { name: /TUTORIAL/i }).click();
 
     await page.waitForTimeout(1000);
 

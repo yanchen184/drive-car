@@ -53,11 +53,11 @@ const SimpleCar = () => {
     angle: 0,         // 停車格角度
   };
 
-  // 車輛尺寸常數
-  const CAR_WIDTH = 40;
-  const CAR_LENGTH = 80;
-  const WHEEL_WIDTH = 8;
-  const WHEEL_LENGTH = 16;
+  // 車輛尺寸常數（增加 50%）
+  const CAR_WIDTH = 60;
+  const CAR_LENGTH = 120;
+  const WHEEL_WIDTH = 12;
+  const WHEEL_LENGTH = 24;
   const MAX_STEERING_ANGLE = Math.PI / 4; // 45度
 
   /**
@@ -154,7 +154,7 @@ const SimpleCar = () => {
   };
 
   /**
-   * 檢查是否成功停車
+   * 檢查是否成功停車（使用百分比計算）
    */
   const checkParking = (car, spot) => {
     // 計算距離
@@ -165,16 +165,31 @@ const SimpleCar = () => {
     // 計算角度差異
     const angleDiff = Math.abs(car.angle - spot.angle) * 180 / Math.PI;
 
-    // 停車成功條件
-    const isInPosition = distance < 20; // 距離小於20px
-    const isAligned = angleDiff < 5;    // 角度差異小於5度
-    const isStopped = Math.abs(car.speed) < 0.1; // 速度接近0
+    // 計算停車百分比
+    // 位置得分：距離越近得分越高（最遠允許 50px）
+    const maxDistance = 50;
+    const positionScore = Math.max(0, 100 - (distance / maxDistance) * 100);
+
+    // 角度得分：角度差越小得分越高（最大允許 30 度）
+    const maxAngleDiff = 30;
+    const angleScore = Math.max(0, 100 - (angleDiff / maxAngleDiff) * 100);
+
+    // 速度得分：速度越慢得分越高（最快允許 1.0）
+    const maxSpeed = 1.0;
+    const speedScore = Math.max(0, 100 - (Math.abs(car.speed) / maxSpeed) * 100);
+
+    // 綜合得分（各佔 1/3）
+    const percentage = Math.round((positionScore + angleScore + speedScore) / 3);
+
+    // 停車成功條件：總分超過 80%
+    const isSuccess = percentage >= 80;
 
     return {
-      success: isInPosition && isAligned && isStopped,
+      success: isSuccess,
       distance,
       angleDiff,
       speed: Math.abs(car.speed),
+      percentage: Math.max(0, Math.min(100, percentage)), // 限制在 0-100
     };
   };
 
@@ -228,11 +243,26 @@ const SimpleCar = () => {
     ctx.fillText(`車身角度: ${(car.angle * 180 / Math.PI).toFixed(1)}°`, 10, 60);
     ctx.fillText(`方向盤角度: ${(car.steeringAngle * 180 / Math.PI).toFixed(1)}°`, 10, 80);
 
+    // 顯示停車百分比
+    ctx.font = 'bold 18px monospace';
+    const percentage = parkingStatus.percentage || 0;
+
+    // 根據百分比顯示不同顏色
+    if (percentage >= 80) {
+      ctx.fillStyle = '#10B981'; // 綠色 - 成功
+    } else if (percentage >= 60) {
+      ctx.fillStyle = '#F59E0B'; // 黃色 - 接近
+    } else {
+      ctx.fillStyle = '#EF4444'; // 紅色 - 需努力
+    }
+
+    ctx.fillText(`🎯 停車精準度: ${percentage}%`, 10, 110);
+
     // 顯示停車狀態
     ctx.font = 'bold 16px monospace';
     if (parkingStatus.success) {
       ctx.fillStyle = '#10B981'; // 綠色
-      ctx.fillText('✓ 停車成功！', 10, 110);
+      ctx.fillText('✓ 停車成功！(≥80%)', 10, 135);
 
       // 繪製大型成功訊息覆蓋層
       ctx.save();
@@ -274,8 +304,9 @@ const SimpleCar = () => {
       ctx.restore();
     } else {
       ctx.fillStyle = '#9CA3AF';
-      ctx.fillText(`距離: ${parkingStatus.distance.toFixed(1)}px`, 10, 110);
-      ctx.fillText(`角度差: ${parkingStatus.angleDiff.toFixed(1)}°`, 10, 130);
+      ctx.font = '14px monospace';
+      ctx.fillText(`距離: ${parkingStatus.distance.toFixed(1)}px`, 10, 160);
+      ctx.fillText(`角度差: ${parkingStatus.angleDiff.toFixed(1)}°`, 10, 180);
     }
 
     // 繪製控制說明
@@ -425,9 +456,9 @@ const SimpleCar = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // 設置 canvas 尺寸
-    canvas.width = 800;
-    canvas.height = 600;
+    // 設置 canvas 尺寸（增加 50%）
+    canvas.width = 1200;
+    canvas.height = 900;
 
     // 啟動遊戲循環
     gameLoop();
@@ -446,13 +477,13 @@ const SimpleCar = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-100 text-center">
-          停車挑戰 v3.2.0 - 第 0 關（教學關）
+          停車挑戰 v3.3.0 - 第 0 關（教學關）
         </h1>
         <p className="text-gray-400 text-center mt-2">
           使用方向鍵控制車輛停入黃色停車格：↑ 前進、↓ 後退、← 左轉、→ 右轉
         </p>
         <p className="text-yellow-400 text-center mt-1 text-sm">
-          🎯 目標：將車輛準確停入停車格（距離 &lt; 20px，角度差 &lt; 5°，速度接近0）
+          🎯 目標：將車輛準確停入停車格（停車精準度 ≥ 80%）
         </p>
       </div>
 
