@@ -10,7 +10,7 @@ import React, { useRef, useEffect, useState } from 'react';
  * 4. 星級評分系統
  * 5. 可調整速度控制
  */
-const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
+const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, currentLevelNumber }) => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
 
@@ -543,10 +543,19 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
   }, [levelData]);
 
   const handleNextLevel = () => {
-    // 關閉覆蓋層並觸發下一關
+    // 關閉覆蓋層並導航到下一關
     setShowCompletionOverlay(false);
-    if (onLevelComplete) {
-      onLevelComplete(completionStats);
+    if (onNextLevel) {
+      onNextLevel();
+    } else {
+      // 備用方案：如果沒有提供 onNextLevel，嘗試重新載入下一關
+      const nextLevelNum = (currentLevelNumber || levelData?.levelNumber || 1) + 1;
+      if (nextLevelNum <= 15) {
+        window.location.href = `/?level=${nextLevelNum}`;
+      } else {
+        alert('恭喜！您已完成所有關卡！');
+        window.location.href = '/';
+      }
     }
   };
 

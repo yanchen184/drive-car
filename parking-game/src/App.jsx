@@ -315,6 +315,8 @@ function App() {
         levelData={levelData}
         onLevelComplete={handleLevelComplete}
         onLevelFailed={handleLevelFailed}
+        onNextLevel={handleNextLevel}
+        currentLevelNumber={currentLevelNumber}
       />
     );
   }
