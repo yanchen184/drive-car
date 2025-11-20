@@ -39,8 +39,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   const collisionsRef = useRef(0);
   const [collisionFlash, setCollisionFlash] = useState(false);
   const lastCollisionTimeRef = useRef(0);
-  const collisionLockedRef = useRef(false); // 碰撞鎖定：阻止朝障礙物方向移動
-  const collisionDirectionRef = useRef(1); // 碰撞時的移動方向 (1=前進, -1=倒車)
+  const collisionSideRef = useRef(null); // 碰撞部位：'front' 或 'rear'
 
   // 車輛狀態
   const [carState, setCarState] = useState({
@@ -335,14 +334,25 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
 
   /**
    * 檢查碰撞（使用旋轉矩形碰撞檢測）
+   * @returns {{ hasCollision: boolean, side: 'front'|'rear'|null }}
    */
   const checkCollision = (car, obstacles) => {
-    if (!obstacles || obstacles.length === 0) return false;
+    if (!obstacles || obstacles.length === 0) {
+      return { hasCollision: false, side: null };
+    }
+
+    // 計算車輛前端和後端的位置
+    const frontX = car.x + Math.sin(car.angle) * (CAR_LENGTH / 2);
+    const frontY = car.y - Math.cos(car.angle) * (CAR_LENGTH / 2);
+    const rearX = car.x - Math.sin(car.angle) * (CAR_LENGTH / 2);
+    const rearY = car.y + Math.cos(car.angle) * (CAR_LENGTH / 2);
 
     // 獲取車輛的旋轉矩形頂點
     const carPoints = getRotatedRectPoints(car.x, car.y, CAR_WIDTH, CAR_LENGTH, car.angle);
 
     for (const obstacle of obstacles) {
+      let collisionDetected = false;
+
       // 特殊處理圓形障礙物（pillar）
       if (obstacle.type === 'pillar') {
         // 使用圓形碰撞檢測
@@ -364,7 +374,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
 
         if (centerDist < radius + Math.max(CAR_WIDTH, CAR_LENGTH) / 2) {
           if (minDist < radius) {
-            return true;
+            collisionDetected = true;
           }
         }
       } else {
@@ -378,12 +388,24 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
         );
 
         if (checkSATCollision(carPoints, obstaclePoints)) {
-          return true;
+          collisionDetected = true;
         }
+      }
+
+      // 如果檢測到碰撞，判斷是車頭還是車尾
+      if (collisionDetected) {
+        // 計算前端和後端到障礙物中心的距離
+        const frontDistSq = (frontX - obstacle.x) ** 2 + (frontY - obstacle.y) ** 2;
+        const rearDistSq = (rearX - obstacle.x) ** 2 + (rearY - obstacle.y) ** 2;
+
+        // 距離較近的那端就是碰撞部位
+        const collisionSide = frontDistSq < rearDistSq ? 'front' : 'rear';
+
+        return { hasCollision: true, side: collisionSide };
       }
     }
 
-    return false;
+    return { hasCollision: false, side: null };
   };
 
   /**
@@ -632,28 +654,14 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
   const updateCarPhysics = (car, controls) => {
     const newCar = { ...car };
 
-    // 碰撞鎖定：只阻止朝碰撞方向移動，允許反向後退
-    if (collisionLockedRef.current) {
-      const collisionDir = collisionDirectionRef.current;
-
-      // 如果嘗試朝碰撞方向移動，阻止加速
-      if (controls.forward && collisionDir > 0) {
-        // 碰撞時是前進，禁止繼續前進加速
+    // 碰撞鎖定：阻止朝碰撞部位方向移動
+    if (collisionSideRef.current) {
+      if (collisionSideRef.current === 'front' && controls.forward) {
+        // 前端撞牆，禁止前進
         newCar.speed = Math.min(0, newCar.speed);
-      } else if (controls.backward && collisionDir < 0) {
-        // 碰撞時是倒車，禁止繼續倒車加速
+      } else if (collisionSideRef.current === 'rear' && controls.backward) {
+        // 後端撞牆，禁止後退
         newCar.speed = Math.max(0, newCar.speed);
-      }
-
-      // 允許反方向移動（離開障礙物）
-      // 自然衰減
-      if (!controls.forward && !controls.backward) {
-        newCar.speed *= newCar.friction;
-        if (Math.abs(newCar.speed) < 0.01) {
-          newCar.speed = 0;
-          // 當完全停止時，解除碰撞鎖定
-          collisionLockedRef.current = false;
-        }
       }
     }
 
@@ -703,16 +711,15 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     }
 
     // 碰撞檢測
-    const hasCollision = checkCollision(newCar, levelData?.obstacles);
+    const collisionResult = checkCollision(newCar, levelData?.obstacles);
     const now = Date.now();
 
-    if (hasCollision) {
-      // 記錄碰撞時的移動方向
-      collisionDirectionRef.current = newCar.speed >= 0 ? 1 : -1;
+    if (collisionResult.hasCollision) {
+      // 記錄碰撞部位（前端或後端）
+      collisionSideRef.current = collisionResult.side;
 
-      // 碰撞時停止車輛並鎖定該方向
+      // 碰撞時停止車輛
       newCar.speed = 0;
-      collisionLockedRef.current = true;
 
       // 只在500ms內計數一次碰撞（避免重複計數）
       if (now - lastCollisionTimeRef.current > 500) {
@@ -730,8 +737,8 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
       }
     } else {
       // 沒有碰撞時，解除鎖定（車輛已離開障礙物）
-      if (collisionLockedRef.current && Math.abs(newCar.speed) > 0.1) {
-        collisionLockedRef.current = false;
+      if (collisionSideRef.current !== null && Math.abs(newCar.speed) > 0.1) {
+        collisionSideRef.current = null;
       }
     }
 
@@ -887,7 +894,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     gameCompletedRef.current = false;
     gameStartTimeRef.current = Date.now();
     collisionsRef.current = 0;
-    collisionLockedRef.current = false; // 解除碰撞鎖定
+    collisionSideRef.current = null; // 解除碰撞鎖定
     setCollisions(0);
     setShowCompletionOverlay(false);
 
@@ -959,7 +966,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     setGameTime(0);
     setCollisions(0);
     collisionsRef.current = 0;
-    collisionLockedRef.current = false; // 解除碰撞鎖定
+    collisionSideRef.current = null; // 解除碰撞鎖定
     gameStartTimeRef.current = Date.now();
 
     // 重置完成狀態

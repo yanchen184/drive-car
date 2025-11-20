@@ -19,10 +19,11 @@ import './index.css';
 function App() {
   // 輸出版本號到控制台
   useEffect(() => {
-    console.log('%c🚗 停車挑戰 v3.7.1', 'color: #EF4444; font-size: 16px; font-weight: bold');
-    console.log('%c碰撞系統智能鎖定 - 可後退脫困', 'color: #10B981; font-size: 14px');
-    console.log('✅ 碰撞後禁止朝障礙物方向移動');
-    console.log('✅ 允許反方向後退脫離障礙物');
+    console.log('%c🚗 停車挑戰 v3.7.2', 'color: #EF4444; font-size: 16px; font-weight: bold');
+    console.log('%c碰撞系統完整修正 - 智能鎖定車頭/車尾', 'color: #10B981; font-size: 14px');
+    console.log('✅ 偵測碰撞部位（車頭/車尾）');
+    console.log('✅ 車頭撞牆 → 禁止前進，允許倒車');
+    console.log('✅ 車尾撞牆 → 禁止倒車，允許前進');
     console.log('✅ 車輛離開障礙物後自動解除鎖定');
     console.log('✅ 修正所有停車格尺寸 - 可達到 100% 精準度');
     console.log('✅ 新增關卡驗證系統 - 自動檢測設計問題');
