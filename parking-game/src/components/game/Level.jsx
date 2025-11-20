@@ -555,8 +555,36 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed }) => {
   };
 
   const handleRestart = () => {
-    // 重新載入關卡
-    window.location.reload();
+    // 重置遊戲狀態
+    setCarState({
+      x: levelData?.carStartPosition?.x || 200,
+      y: levelData?.carStartPosition?.y || 500,
+      angle: levelData?.carStartPosition?.angle || 0,
+      steeringAngle: 0,
+      speed: 0,
+      maxSpeed: 0.5,
+      acceleration: 0.1,
+      friction: 0.95,
+      wheelBase: 80,
+    });
+
+    // 重置遊戲計時和碰撞
+    setGameTime(0);
+    setCollisions(0);
+    collisionsRef.current = 0;
+    gameStartTimeRef.current = Date.now();
+
+    // 重置完成狀態
+    setShowCompletionOverlay(false);
+    gameCompletedRef.current = false;
+
+    // 重置控制器
+    controlsRef.current = {
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+    };
   };
 
   return (
