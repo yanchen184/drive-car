@@ -4,7 +4,7 @@
   "difficulty": "beginner",
   "parkingSpot": {
     "x": 600,
-    "y": 450,
+    "y": 350,
     "width": 90,
     "height": 150,
     "angle": 0.785398
@@ -12,16 +12,16 @@
   "obstacles": [
     {
       "type": "car",
-      "x": 750,
-      "y": 450,
+      "x": 780,
+      "y": 350,
       "width": 90,
       "height": 150,
       "angle": 0.785398
     },
     {
       "type": "car",
-      "x": 450,
-      "y": 450,
+      "x": 420,
+      "y": 350,
       "width": 90,
       "height": 150,
       "angle": 0.785398

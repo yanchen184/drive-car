@@ -24,11 +24,11 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
 
   // 可調整的速度參數
   const maxSpeedRef = useRef(0.5);
-  const steeringSpeedRef = useRef(0.001);
+  const steeringSpeedRef = useRef(0.004);
 
   // 顯示用的狀態
   const [maxSpeedDisplay, setMaxSpeedDisplay] = useState(0.5);
-  const [steeringSpeedDisplay, setSteeringSpeedDisplay] = useState(0.001);
+  const [steeringSpeedDisplay, setSteeringSpeedDisplay] = useState(0.004);
 
   // 遊戲狀態
   const [gameTime, setGameTime] = useState(0);
@@ -439,10 +439,10 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     const finalPercentage = Math.max(0, Math.round(overlapPercentage - speedPenalty - anglePenalty));
 
     // 停車成功條件：
-    // 1. 重疊比例至少 80%
+    // 1. 重疊比例至少 95%（更嚴格的要求）
     // 2. 速度夠慢（< maxSpeed）
     // 3. 角度差異小於 20 度
-    const isSuccess = overlapPercentage >= 80 && Math.abs(car.speed) < maxSpeed && angleDiff < 20;
+    const isSuccess = overlapPercentage >= 95 && Math.abs(car.speed) < maxSpeed && angleDiff < 20;
 
     return {
       success: isSuccess,
@@ -508,9 +508,9 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     const overlapPercentage = parkingStatus.overlapPercentage || 0;
 
     // 根據百分比顯示不同顏色
-    if (percentage >= 80) {
+    if (percentage >= 95) {
       ctx.fillStyle = '#10B981'; // 綠色 - 成功
-    } else if (percentage >= 60) {
+    } else if (percentage >= 80) {
       ctx.fillStyle = '#F59E0B'; // 黃色 - 接近
     } else {
       ctx.fillStyle = '#EF4444'; // 紅色 - 需努力
@@ -528,7 +528,7 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     if (parkingStatus.success) {
       ctx.font = 'bold 20px monospace';
       ctx.fillStyle = '#10B981';
-      ctx.fillText('✓ 停車成功！(≥80%)', 10, 185);
+      ctx.fillText('✓ 停車成功！(≥95%)', 10, 185);
 
       // 記錄完成但不顯示完整覆蓋層（改為顯示浮動按鈕）
       if (!gameCompletedRef.current) {
@@ -609,22 +609,24 @@ const Level = ({ levelData, onLevelComplete, onLevelFailed, onNextLevel, current
     const hasCollision = checkCollision(newCar, levelData?.obstacles);
     const now = Date.now();
 
-    if (hasCollision && now - lastCollisionTimeRef.current > 500) {
-      // 防止短時間內重複計數
-      lastCollisionTimeRef.current = now;
-      collisionsRef.current += 1;
+    if (hasCollision) {
+      // 碰撞時完全停止車輛
+      newCar.speed = 0;
 
-      // 碰撞視覺反饋
-      setCollisionFlash(true);
-      setTimeout(() => setCollisionFlash(false), 200);
+      // 只在500ms內計數一次碰撞（避免重複計數）
+      if (now - lastCollisionTimeRef.current > 500) {
+        lastCollisionTimeRef.current = now;
+        collisionsRef.current += 1;
 
-      // 碰撞音效
-      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
-      audio.volume = 0.3;
-      audio.play().catch(err => console.log('Audio play failed:', err));
+        // 碰撞視覺反饋
+        setCollisionFlash(true);
+        setTimeout(() => setCollisionFlash(false), 200);
 
-      // 碰撞後停車並輕微反彈
-      newCar.speed = -newCar.speed * 0.3;
+        // 碰撞音效
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+        audio.volume = 0.3;
+        audio.play().catch(err => console.log('Audio play failed:', err));
+      }
     }
 
     return newCar;
